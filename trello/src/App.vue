@@ -2,23 +2,28 @@
 <div id="app">
     <p>{{ greeting }}</p>
     <p>{{ flaskGreeting }}</p>
+    <p>{{ teamName }}</p>
 </div>
 </template>
 
 <script>
+
 export default {
     components: {
     },
     data: function(){
         return {
             greeting: 'Hello, Vue!',
-            flaskGreeting: ''
+            flaskGreeting: '',
+            teamName: '',
+            board: ''
         }
     },
     created: async function(){
         const gResponse = await fetch("http://localhost:5000/");
         const gObject = await gResponse.json();
         this.flaskGreeting = gObject.greeting;
+        this.teamName = gObject.team;
     }
 }
 </script>
