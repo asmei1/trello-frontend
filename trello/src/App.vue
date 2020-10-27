@@ -15,8 +15,7 @@ export default {
         return {
             greeting: 'Hello, Vue!',
             flaskGreeting: '',
-            teamName: '',
-            board: ''
+            teamName: ''
         }
     },
     created: async function(){
