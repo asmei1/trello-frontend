@@ -22,7 +22,7 @@ export default {
     }
   },
   created: async function () {
-    const gResponse = await fetch("http://localhost:5000/");
+    const gResponse = await fetch("https://trelloprojectapp.herokuapp.com");
     const gObject = await gResponse.json();
     this.flaskGreeting = gObject.greeting;
     this.teamName = gObject.team;
