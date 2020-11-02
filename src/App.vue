@@ -1,19 +1,45 @@
 <template>
   <div id=app>
-    <main>
-      <div class="container">
-      <h1 class="display-3">{{ greeting }}</h1>
-      <h2 class="display-3">{{ flaskGreeting }}</h2>
-      <h3 class="display-3">{{ teamName }}</h3>
+    <div class="md-fixed">
+      <Header/>
+    </div>
+<!--    <div class="full-control">-->
+<!--    <md-card style="background: linear-gradient(135deg, #0079bf, #5067c5) no-repeat top left; width: auto; height: 600px; position: center; alignment: center">-->
+<!--      <md-card-header>-->
+<!--        <md-card-header-text>-->
+<!--          <div class="md-title" style="color: white; width: 300px;">Aplikacja Trello pomaga we współpracy i wykonywaniu większej liczby zadań.</div>-->
+<!--          <div class="md-subhead" style="color: white; width: 300px;">Tablice, listy i karty Trello umożliwiają zespołom organizację i szeregowanie projektów w przystępny, elastyczny i praktyczny sposób.</div>-->
+<!--        </md-card-header-text>-->
+
+<!--        <img src="https://i.pinimg.com/originals/15/53/58/155358fcb5830aa596ac191b15bb0bb2.png" >-->
+<!--      </md-card-header>-->
+<!--    </md-card>-->
+<!--    </div>-->
+
+<!--&lt;!&ndash;      <md-card-actions>&ndash;&gt;-->
+<!--&lt;!&ndash;        <md-button>Action</md-button>&ndash;&gt;-->
+<!--&lt;!&ndash;        <md-button>Action</md-button>&ndash;&gt;-->
+<!--&lt;!&ndash;      </md-card-actions>&ndash;&gt;-->
+<!--&lt;!&ndash;    </md-card>&ndash;&gt;-->
+<!--    </div>-->
+    <div class="full-control">
+        <h1 style="color:white;">Aplikacja Trello pomaga we współpracy i wykonywaniu większej liczby zadań.</h1>
+        <div class="image">
+        <img src="https://i.pinimg.com/originals/15/53/58/155358fcb5830aa596ac191b15bb0bb2.png" >
       </div>
-    </main>
+
+    </div>
   </div>
 </template>
 
 <script>
 
+import Header from "./components/Header";
+
 export default {
-  components: {},
+  components: {
+    Header
+  },
   data: function () {
     return {
       greeting: 'Hello, Vue!',
@@ -30,40 +56,49 @@ export default {
 }
 </script>
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+<style lang="scss" scoped>
 
-body {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  text-align: center;
-}
-
-#app {
-  background-image: url('./assets/vue.jpeg');
+.full-control {
+  padding-top: 100px;
+  width: auto;
+  height: 500px;
+  background: linear-gradient(135deg, #0079bf, #5067c5) no-repeat top left;
   background-size: cover;
-  background-position: bottom;
-  transition: 0.4s;
 }
 
-main {
-  min-height: 100vh;
-  padding-top: 200px;
-  padding-left: 70vh;
+.md-fixed {
+  position: fixed;
+  width: 100%;
 }
 
-.container {
-  background-color: white;
-  border-color: #42b983;
-  border-style: dashed;
-  border-radius: 14px;
+.image{
+  float: right;
+  margin-right: 300px;
+}
+h1{
+  padding-top: 40px;
+  color: white;
   width: 600px;
-  height: 200px;
+  font-size: 40px;
+  height: 400px;
+  margin-left: 300px;
+  float: left;
+  line-height: 45px;
 }
-.display-3 {
-  padding: 20px;
+h2{
+  padding-top: 120px;
+  color: white;
+  width: 600px;
+  height: 400px;
+  margin-left: 300px;
+  float: left;
 }
+
+
+md-card{
+  margin-right: auto;
+  margin-left: auto;
+}
+
+
 </style>
