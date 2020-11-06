@@ -1,7 +1,11 @@
 <template>
     <md-app md-waterfall md-mode="fixed">
       <md-app-toolbar style="background-color: #0079BF;">
-        <span class="md-title" style="color: white;">Trello</span>
+        <span class="md-title" style="color: white;">Cripplello</span>
+        <div class="md-toolbar-section-end">
+          <md-button class="md-raised" style="color: white; background-color: #d94395;">Zarejestruj się</md-button>
+          <md-button class="md-raised" style="color: white; background-color: #d94395;">Zaloguj się</md-button>
+        </div>
       </md-app-toolbar>
     </md-app>
 </template>
@@ -21,12 +25,17 @@ export default {
 
 .md-app {
   border: 1px solid rgba(#0079BF, 1);
-  height: 70px;
 }
 
 .md-title{
   font-family: "Segoe Print";
-  font-size: 30px;
+  font-size: 32px;
+  height: 32px;
+}
+
+.md-raised {
+  border-radius: 10px;
+  font-family: "Segoe Print";
 }
 
 

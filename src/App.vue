@@ -1,33 +1,28 @@
 <template>
   <div id=app>
-    <div class="md-fixed">
-      <Header/>
-    </div>
-<!--    <div class="full-control">-->
-<!--    <md-card style="background: linear-gradient(135deg, #0079bf, #5067c5) no-repeat top left; width: auto; height: 600px; position: center; alignment: center">-->
-<!--      <md-card-header>-->
-<!--        <md-card-header-text>-->
-<!--          <div class="md-title" style="color: white; width: 300px;">Aplikacja Trello pomaga we współpracy i wykonywaniu większej liczby zadań.</div>-->
-<!--          <div class="md-subhead" style="color: white; width: 300px;">Tablice, listy i karty Trello umożliwiają zespołom organizację i szeregowanie projektów w przystępny, elastyczny i praktyczny sposób.</div>-->
-<!--        </md-card-header-text>-->
-
-<!--        <img src="https://i.pinimg.com/originals/15/53/58/155358fcb5830aa596ac191b15bb0bb2.png" >-->
-<!--      </md-card-header>-->
-<!--    </md-card>-->
-<!--    </div>-->
-
-<!--&lt;!&ndash;      <md-card-actions>&ndash;&gt;-->
-<!--&lt;!&ndash;        <md-button>Action</md-button>&ndash;&gt;-->
-<!--&lt;!&ndash;        <md-button>Action</md-button>&ndash;&gt;-->
-<!--&lt;!&ndash;      </md-card-actions>&ndash;&gt;-->
-<!--&lt;!&ndash;    </md-card>&ndash;&gt;-->
-<!--    </div>-->
     <div class="full-control">
-        <h1 style="color:white;">Aplikacja Trello pomaga we współpracy i wykonywaniu większej liczby zadań.</h1>
-        <div class="image">
-        <img src="https://i.pinimg.com/originals/15/53/58/155358fcb5830aa596ac191b15bb0bb2.png" >
+      <div class="md-fixed">
+        <Header/>
       </div>
-
+      <h1>Chcesz w łatwy sposób rozplanować sobie pracę ?</h1>
+      <div class="image">
+        <img
+            src="https://miro.medium.com/max/1126/1*UaZKTtSbz0EkoHL4FSsVvQ@2x.png" style="height: 400px;">
+      </div>
+    </div>
+    <div class="full-control1">
+      <div class="image1">
+        <img src="https://d2k1ftgv7pobq7.cloudfront.net/meta/p/res/images/308998dcb3ed5ab3d01217a4d24ffa03/hero-a.svg">
+      </div>
+      <h11 style="color: #0079BF;">Skorzystaj z Cripplello !</h11>
+    </div>
+    <div class="full-control2">
+      <div>
+        <h12 style="color: #0079BF;">Nie masz konta ? Zarejestruj się za darmo !</h12>
+      </div>
+      <div>
+        <md-button class="md-raised" style="color: white; background-color: #0079BF;">Zarejestruj się</md-button>
+      </div>
     </div>
   </div>
 </template>
@@ -59,24 +54,56 @@ export default {
 <style lang="scss" scoped>
 
 .full-control {
-  padding-top: 100px;
   width: auto;
-  height: 500px;
-  background: linear-gradient(135deg, #0079bf, #5067c5) no-repeat top left;
+  height: 600px;
+  background: linear-gradient(180deg, #0079bf, #eca3cb) no-repeat top left;
   background-size: cover;
+}
+
+.full-control1 {
+  width: auto;
+  height: 700px;
+  background: linear-gradient(180deg, #eca3cb, #ffffff) no-repeat top left;
+  background-size: cover;
+}
+
+.full-control2 {
+  width: auto;
+  height: 200px;
+  background: white no-repeat top left;
+  background-size: cover;
+  margin-right: auto;
+  text-align: center;
+  display: block;
+
 }
 
 .md-fixed {
   position: fixed;
   width: 100%;
+  float: top;
 }
 
-.image{
+.image {
   float: right;
   margin-right: 300px;
+  padding-top: 75px;
 }
-h1{
-  padding-top: 40px;
+
+.image1 {
+  float: left;
+  margin-left: 300px;
+  padding-top: 0px;
+}
+
+.image2 {
+  padding-top: 70px;
+  alignment: center;
+
+}
+
+h1 {
+  padding-top: 200px;
   color: white;
   width: 600px;
   font-size: 40px;
@@ -84,18 +111,39 @@ h1{
   margin-left: 300px;
   float: left;
   line-height: 45px;
+  font-family: "Segoe Print";
 }
-h2{
-  padding-top: 120px;
+
+h11 {
+  padding-top: 150px;
   color: white;
   width: 600px;
+  font-size: 40px;
   height: 400px;
-  margin-left: 300px;
-  float: left;
+  margin-right: 300px;
+  float: right;
+  line-height: 45px;
+  font-family: "Segoe Print";
 }
 
+h12 {
+  padding-top: 200px;
+  color: white;
+  font-size: 40px;
+  line-height: 45px;
+  font-family: "Segoe Print";
+}
 
-md-card{
+.md-raised {
+  margin-top: 50px;
+  width: 500px;
+  border-radius: 20px;
+  font-size: 20px;
+  height: 50px;
+  font-family: "Segoe Print";
+}
+
+md-card {
   margin-right: auto;
   margin-left: auto;
 }
