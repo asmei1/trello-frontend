@@ -48,16 +48,16 @@ export default {
       formdata.append("password", this.userPassword);
       var requestOptions = {
         method: 'POST',
-        headers: myHeaders,
+        // headers: {'Content-Type': 'application/json'},
         body: formdata,
         redirect: 'follow'
       };
       fetch("http://127.0.0.1:5000/login", requestOptions)
           .then(response => {
             console.log(response.ok)
-            if(response.status == 200)
+            if(response.ok)
             {
-              window.location.replace("http://localhost:8080/userHome");
+              this.$router.replace("/userHome");
             }
             else{
               alert("Invalid Email or Password");
