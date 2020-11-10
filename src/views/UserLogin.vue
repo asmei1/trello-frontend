@@ -1,26 +1,26 @@
 <template>
   <section>
     <div class="full-control" style="padding-top: 200px">
-            <div class="md-card" style="border-radius: 10px; border-width: 4px; width: 600px">
-              <md-card-header>
-                <div class="md-title" align="center" style="color: #0079bf; font-size: 40px;">Sign in</div>
-              </md-card-header>
+      <div class="md-card" style="border-radius: 10px; border-width: 4px; width: 600px">
+        <md-card-header>
+          <div class="md-title" align="center" style="color: #0079bf; font-size: 40px;">Sign in</div>
+        </md-card-header>
 
-              <hr class="line1">
-              <form name="userForm">
-                <md-field>
-                  <label>Username</label>
-                  <md-input v-model="username" ></md-input>
-                  <span class="md-suffix"></span>
-                </md-field>
+        <hr class="line1">
+        <form name="userForm">
+          <md-field>
+            <label>Username</label>
+            <md-input v-model="username" ></md-input>
+            <span class="md-suffix"></span>
+          </md-field>
 
-                <md-field :md-toggle-password="false">
-                  <label>Password</label>
-                  <md-input v-model="userPassword" type="password"></md-input>
-                </md-field>
-              </form>
-              <md-button @click="signIn()" class="md-raised" style="color: white; background-color: #0079BF;">Sign in</md-button>
-            </div>
+          <md-field :md-toggle-password="false">
+            <label>Password</label>
+            <md-input v-model="userPassword" type="password"></md-input>
+          </md-field>
+        </form>
+        <md-button @click="signIn()" class="md-raised" style="color: white; background-color: #0079BF;">Sign in</md-button>
+      </div>
     </div>
   </section>
 </template>
@@ -40,33 +40,35 @@ export default {
     }
   },
   methods:{
-  async signIn(){
-    // POST request using fetch with async/await
-    const requestOptions = {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({username: this.username, password: this.userPassword})
-    };
+
+    async signIn() {
+      // POST request using fetch with async/await
 
 
-    const response = await fetch("http://localhost:5000/login", requestOptions);
-    const token = await response.json();
-    // console.log(token)
-
-    const requestTokenOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
-        'My-Custom-Header': 'foobar'
-      },
-      body: JSON.stringify({ title: 'Vue POST Request Example' })
-    };
-    fetch('http://localhost:5000/login', requestTokenOptions)
-        .then(response => response.json())
-        .then(data => this.postId = data.id);
-
-  }
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDQ0MjEyNjUsImV4cCI6MTYwNDQyMTMyNSwianRpIjoiYWE0YmFkZDMtYjI4MS00ZjZlLWE0ZWMtNTkxNDhkNjhiZDVhIiwiaWQiOjEsInJscyI6IiIsInJmX2V4cCI6MTYwNzAxMzI2NX0.gkZTbH_LUGkToZKozi4BpLtOQj-jqB8y94T0RLMySrQ");
+      var formdata = new FormData();
+      formdata.append("username", this.username);
+      formdata.append("password", this.userPassword);
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow'
+      };
+      fetch("http://127.0.0.1:5000/login", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if(response.status == 200)
+            {
+              window.location.replace("http://localhost:8080/userHome");
+            }
+            else{
+              alert("Invalid Email or Password");
+            }
+          })
+          .catch(error => console.log('error', error));
+    }
   }
 }
 </script>
