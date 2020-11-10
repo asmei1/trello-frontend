@@ -1,23 +1,19 @@
 <template>
   <section>
     <div class="full-control">
-<!--      <div class="elevation-demo">-->
         <md-toolbar style="color: white; background-color: #0079BF;">
           <h3 class="md-title" style="color: white;">Active tables</h3>
         </md-toolbar>
         <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
           <md-button class="md-raised">{{ board }}</md-button>
         </div>
-<!--      <md-button class="md-raised">{{ nonArchivedBoards}}</md-button>-->
         <md-button class="md-raised" style="color: black; background-color: #F0F0F0;">Create new table</md-button>
         <md-toolbar style="color: white; background-color: dimgray;">
           <h3 class="md-title" style="color: white;">Archived tables</h3>
         </md-toolbar>
         <div v-for="(board) in archivedBoards" v-bind:key="board.id">
-          <md-button class="md-raised">{{ board.id }}</md-button>
+          <md-button class="md-raised">{{ board}}</md-button>
         </div>
-<!--      <md-button class="md-raised">{{ archivedBoards}}</md-button>-->
-<!--      </div>-->
     </div>
   </section>
 </template>
@@ -33,22 +29,11 @@ name: "UserHome",
   },
   created: async function () {
 
-    var request = require('request');
-    var options = {
-      'method': 'GET',
-      'url': 'http://localhost:5000/get_user_boards?username=User',
-      'headers': {
-      }
-    };
-    request(options, function (error, response) {
-      if (error) throw new Error(error);
-      console.log(response.body);
-      var data = JSON.parse(response.body);
-      this.archivedBoards = data.archieve_boards;
-      this.nonArchivedBoards = data.non_archieve_boards;
-      console.log(this.archivedBoards);
-      console.log(this.nonArchivedBoards);
-    });
+
+    let response = await fetch(`http://localhost:5000/get_user_boards?username=User`);
+    let data = await response.json()
+    this.archivedBoards = data.archieve_boards;
+    this.nonArchivedBoards = data.non_archieve_boards;
 
 
   }
