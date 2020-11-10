@@ -1,6 +1,7 @@
 <template>
   <section>
     <div class="full-control">
+
         <md-toolbar style="color: white; background-color: #0079BF;">
           <h3 class="md-title" style="color: white;">Active tables</h3>
         </md-toolbar>
@@ -49,6 +50,8 @@ section{
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
+  font-family: "Segoe Print",serif;
+
 }
 
 .full-control {
@@ -82,11 +85,15 @@ section{
 .md-raised{
   height: 100px;
   width: 200px;
+  border-radius: 10px;
 }
+
 .md-toolbar{
   margin-top: 20px;
   margin-bottom: 20px;
   background-color: #eca3cb;
 }
-
+.md-content{
+  height: 400px;
+}
 </style>
