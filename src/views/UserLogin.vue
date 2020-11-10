@@ -54,11 +54,11 @@ export default {
 
       fetch("http://127.0.0.1:5000/login", requestOptions)
           .then(response => {
-            console.log(response.ok)
-            if (response.status == 200) {
+            if (response.ok) {
               this.$router.replace("/userHome");
-              localStorage.setItem("username", this.username);
-              localStorage.setItem("token", response.json());
+              //in future we can get whole information about user here
+              this.$store.commit('USER_LOGIN', {"username": this.username});
+              this.$store.commit('USER_TOKEN', response.json());
             } else {
               alert("Invalid Email or Password");
             }

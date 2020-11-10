@@ -20,7 +20,10 @@
     "vue": "^2.6.11",
     "vue-material": "^1.0.0-beta-15",
     "vue-material-design-components": "0.0.10",
-    "vue-material-design-icons": "^4.10.0"
+    "vue-material-design-icons": "^4.10.0",
+    "vuex": "^3.5.1",
+    "vuex-persisted": "^0.0.1",
+    "vuex-persistedstate": "^4.0.0-beta.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
