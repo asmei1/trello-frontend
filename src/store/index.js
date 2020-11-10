@@ -7,8 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
-        user: {},
-        token: {}
+        user: undefined,
+        token: ""
     },
     getters: {
         //...other getters...
@@ -16,10 +16,11 @@ export default new Vuex.Store({
     mutations: {
         // mutating your user state
         [types.USER_LOGIN](state, user) {
-            state.user = user
+            state.user = user;
         },
         [types.USER_LOGOUT](state) {
-            state.user = {}
+            state.user = undefined ;
+            state.user = "";
         },
         [types.USER_TOKEN](state, token) {
             state.token = token

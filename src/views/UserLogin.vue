@@ -28,7 +28,6 @@
 
 <script>
 
-
 export default {
   name: "UserLogin",
   components: {},
@@ -39,7 +38,6 @@ export default {
     }
   },
   methods: {
-
     async signIn() {
       var headers = new Headers();
       var formdata = new FormData();

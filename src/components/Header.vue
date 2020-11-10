@@ -5,16 +5,16 @@
         <span class="md-title" style="color: white;">Cripplello</span>
       </router-link>
       <div class="md-toolbar-section-end">
-        <div v-if="isUserLogged">
-          <md-label>Welcome {{ this.user.username }}</md-label>
-          <md-button :to="{path: '/logout'}" class="md-raised" style="color: white; background-color: #d94395;">Logout
+        <template v-if="isUserLogged">
+          <span class="md-title">Welcome {{ this.user.username }}</span>
+          <md-button @click="logout()" class="md-raised" style="color: white; background-color: #d94395;">Logout
           </md-button>
-        </div>
-        <div v-else>
+        </template>
+        <template v-else>
           <md-button class="md-raised" style="color: white; background-color: #d94395;">Register</md-button>
           <md-button :to="{path: '/login'}" class="md-raised" style="color: white; background-color: #d94395;">Login
           </md-button>
-        </div>
+        </template>
       </div>
     </md-app-toolbar>
   </md-app>
@@ -24,11 +24,17 @@
 export default {
   name: 'Header',
   data: () => ({
-    user: null
+    user: null,
   }),
   computed:{
     isUserLogged(){
       return this.user;
+    }
+  },
+  methods:{
+    logout: function () {
+      this.$store.commit('USER_LOGOUT');
+      this.$router.push("/");
     }
   },
   mounted() {
