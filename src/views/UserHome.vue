@@ -1,43 +1,89 @@
 <template>
-  <div class="elevation-demo">
-    <md-content class="md-elevation-1">1</md-content>
-    <md-content class="md-elevation-2">2</md-content>
-    <md-content class="md-elevation-3">3</md-content>
-    <md-content class="md-elevation-4">4</md-content>
-    <md-content class="md-elevation-5">5</md-content>
-    <md-content class="md-elevation-6">6</md-content>
-    <md-content class="md-elevation-7">7</md-content>
-    <md-content class="md-elevation-8">8</md-content>
-    <md-content class="md-elevation-9">9</md-content>
-    <md-content class="md-elevation-10">10</md-content>
-    <md-content class="md-elevation-11">11</md-content>
-    <md-content class="md-elevation-12">12</md-content>
-    <md-content class="md-elevation-13">13</md-content>
-    <md-content class="md-elevation-14">14</md-content>
-    <md-content class="md-elevation-15">15</md-content>
-    <md-content class="md-elevation-16">16</md-content>
-    <md-content class="md-elevation-17">17</md-content>
-    <md-content class="md-elevation-18">18</md-content>
-    <md-content class="md-elevation-19">19</md-content>
-    <md-content class="md-elevation-20">20</md-content>
-    <md-content class="md-elevation-21">21</md-content>
-    <md-content class="md-elevation-22">22</md-content>
-    <md-content class="md-elevation-23">23</md-content>
-    <md-content class="md-elevation-24">24</md-content>
-  </div>
+  <section>
+    <div class="full-control">
+<!--      <div class="elevation-demo">-->
+        <md-toolbar style="color: white; background-color: #0079BF;">
+          <h3 class="md-title" style="color: white;">Active tables</h3>
+        </md-toolbar>
+        <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
+          <md-button class="md-raised">{{ board }}</md-button>
+        </div>
+<!--      <md-button class="md-raised">{{ nonArchivedBoards}}</md-button>-->
+        <md-button class="md-raised" style="color: black; background-color: #F0F0F0;">Create new table</md-button>
+        <md-toolbar style="color: white; background-color: dimgray;">
+          <h3 class="md-title" style="color: white;">Archived tables</h3>
+        </md-toolbar>
+        <div v-for="(board) in archivedBoards" v-bind:key="board.id">
+          <md-button class="md-raised">{{ board.id }}</md-button>
+        </div>
+<!--      <md-button class="md-raised">{{ archivedBoards}}</md-button>-->
+<!--      </div>-->
+    </div>
+  </section>
 </template>
 
 <script>
 export default {
-name: "UserHome"
+name: "UserHome",
+  data(){
+  return{
+    archivedBoards: [],
+    nonArchivedBoards: []
+    }
+  },
+  created: async function () {
+
+    var request = require('request');
+    var options = {
+      'method': 'GET',
+      'url': 'http://localhost:5000/get_user_boards?username=User',
+      'headers': {
+      }
+    };
+    request(options, function (error, response) {
+      if (error) throw new Error(error);
+      console.log(response.body);
+      var data = JSON.parse(response.body);
+      this.archivedBoards = data.archieve_boards;
+      this.nonArchivedBoards = data.non_archieve_boards;
+      console.log(this.archivedBoards);
+      console.log(this.nonArchivedBoards);
+    });
+
+
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.elevation-demo {
-  padding: 16px;
+
+section{
+  height: 100vh;
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/homeUserBackground.jpg');
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.full-control {
   display: flex;
   flex-wrap: wrap;
+  padding-top: 100px;
+  max-width: 800px;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.elevation-demo {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 100px;
+  max-width: 800px;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .md-content {
@@ -45,7 +91,17 @@ name: "UserHome"
   height: 100px;
   margin: 24px;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
+
+.md-raised{
+  height: 100px;
+  width: 200px;
+}
+.md-toolbar{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: #eca3cb;
+}
+
 </style>
