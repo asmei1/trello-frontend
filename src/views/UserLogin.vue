@@ -43,10 +43,6 @@ export default {
 
     async signIn() {
       // POST request using fetch with async/await
-
-
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDQ0MjEyNjUsImV4cCI6MTYwNDQyMTMyNSwianRpIjoiYWE0YmFkZDMtYjI4MS00ZjZlLWE0ZWMtNTkxNDhkNjhiZDVhIiwiaWQiOjEsInJscyI6IiIsInJmX2V4cCI6MTYwNzAxMzI2NX0.gkZTbH_LUGkToZKozi4BpLtOQj-jqB8y94T0RLMySrQ");
       var formdata = new FormData();
       formdata.append("username", this.username);
       formdata.append("password", this.userPassword);
