@@ -4,14 +4,16 @@ import createPersistedState from "vuex-persistedstate";
 import * as types from './mutation-types'
 
 Vue.use(Vuex)
-export default new Vuex.Store({
+const store = new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
         user: undefined,
         token: ""
     },
     getters: {
-        //...other getters...
+        isUserLogIn: (state) => {
+            return state.user;
+        }
     },
     mutations: {
         // mutating your user state
@@ -19,13 +21,14 @@ export default new Vuex.Store({
             state.user = user;
         },
         [types.USER_LOGOUT](state) {
-            state.user = undefined ;
+            state.user = undefined;
             state.user = "";
         },
         [types.USER_TOKEN](state, token) {
             state.token = token
         }
     },
-    actions: {
-    },
+    actions: {},
 })
+
+export default store;

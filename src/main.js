@@ -7,7 +7,6 @@ import 'vue-material/dist/theme/default.css'
 import 'vue-material-design-icons/styles.css';
 import 'material-design-icons/iconfont/material-icons.css'
 
-
 Vue.config.productionTip = false
 
 Vue.use(VueMaterial)

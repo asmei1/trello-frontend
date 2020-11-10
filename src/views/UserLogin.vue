@@ -53,17 +53,20 @@ export default {
       fetch("http://127.0.0.1:5000/login", requestOptions)
           .then(response => {
             if (response.ok) {
-              this.$router.replace("/userHome");
               //in future we can get whole information about user here
               this.$store.commit('USER_LOGIN', {"username": this.username});
               this.$store.commit('USER_TOKEN', response.json());
+
+              this.$router.replace("/userHome");
             } else {
               alert("Invalid Email or Password");
             }
           })
           .catch(error => console.log('error', error));
     }
-  }
+  },
+
+
 }
 </script>
 
