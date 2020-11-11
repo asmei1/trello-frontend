@@ -17,7 +17,7 @@
             <md-button md-menu-trigger class="md-icon-button" style="color: white">{{this.$store.state.user.username.charAt(0)}}</md-button>
             <md-menu-content>
               <router-link to="/userHome" style="text-decoration: none; color: white; font-family: 'Segoe Print',serif">
-                <md-menu-item>Home</md-menu-item>
+                <md-menu-item @click="data = 'click 1'">Home</md-menu-item>
               </router-link>
               <md-menu-item @click="logout()" class="md-raised">Logout</md-menu-item>
             </md-menu-content>
