@@ -49,7 +49,7 @@ export default {
     }
   },
   created: async function () {
-    let response = await fetch(`http://localhost:5000/get_user_boards?username=User`);
+    let response = await fetch(`http://localhost:5000/get_user_boards?username=` + this.$store.state.user.username);
     let data = await response.json()
     this.archivedBoards = data.archieve_boards;
     this.nonArchivedBoards = data.non_archieve_boards;

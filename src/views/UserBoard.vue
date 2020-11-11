@@ -1,13 +1,39 @@
 <template>
   <section>
     <div class="full-control">
+      <md-dialog :md-active.sync="showDialogList">
+        <md-dialog-title>Add new list</md-dialog-title>
+        <md-tab md-label="General">
+          <md-field>
+            <label>Title</label>
+            <md-input v-model="newListTitle" ></md-input>
+          </md-field>
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialogList = false">Cancel</md-button>
+          <md-button class="md-primary" @click="addList(newListTitle)">Add</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+      <md-dialog :md-active.sync="showDialogCard">
+        <md-dialog-title>Add new card</md-dialog-title>
+        <md-tab md-label="General">
+          <md-field>
+            <label>Title</label>
+            <md-input v-model="newCardTitle" ></md-input>
+          </md-field>
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialogCard = false">Cancel</md-button>
+          <md-button class="md-primary" @click="addList(newCardTitle, cardName)">Add</md-button>
+        </md-dialog-actions>
+      </md-dialog>
       <md-toolbar class="md-transparent" style="width: 100%">
         <h3 class="md-title" style="font-weight: bold; color: white">{{ titleBoard }}</h3>
       </md-toolbar>
-      <div v-for="(list) in lists" v-bind:key="list.id">
+      <div v-for="(list, key) in lists" v-bind:key="list.id">
         <div class="viewport">
           <md-toolbar :md-elevation="1">
-            <span class="md-title">{{ list.id }}</span>
+            <span class="md-title">{{ key }}</span>
           </md-toolbar>
           <div v-for="(card) in list" v-bind:key="card.id">
             <md-list class="md-double-line">
@@ -15,15 +41,25 @@
                 <div class="md-list-item-text">
                   <span>{{ card }}</span>
                 </div>
+                <md-button class="md-icon-button">
+                  <md-icon>edit</md-icon>
+                </md-button>
               </md-list-item>
               <md-divider></md-divider>
             </md-list>
           </div>
+          <md-list class="md-double-line">
+            <md-list-item style="margin-right: auto; margin-left: auto;">
+            <md-button @click="showDialogCard = true" class="md-icon-button" style="color: white; background-color: #d94395;">
+              <md-icon style="color: white;">add</md-icon>
+            </md-button>
+            </md-list-item>
+          </md-list>
         </div>
       </div>
-      <md-content class="md-scrollbar">
-
-      </md-content>
+      <div>
+        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add list</md-button>
+      </div>
     </div>
   </section>
 </template>
@@ -34,7 +70,11 @@ export default {
   data() {
     return {
       titleBoard: '',
-      lists: []
+      lists: [],
+      cardName: '',
+      listName: '',
+      showDialogList: false,
+      showDialogCard: false,
     }
   },
   created: async function () {
@@ -46,12 +86,55 @@ export default {
           console.log(this.lists)
         })
         .catch(error => console.log('error', error));
+  },
+  methods: {
+    addList(listName) {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      this.showDialogList = false;
+      var formdata = new FormData();
+      formdata.append("board_title", this.titleBoard);
+      formdata.append("new_list_title", listName);
+      var requestOptions = {
+        method: 'POST',
+        body: formdata,
+        redirect: 'follow',
+        header: headers
+      };
+      fetch("http://127.0.0.1:5000/add_list", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.$router.go();
+            } else {
+              alert("Can not add new table");
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
 
-
-    // let response = await fetch(`http://localhost:5000/board_context?board_title=`+ this.titleBoard);
-    // let data = await response.json();
-    // this.lists = data
-    // console.log(this.lists)
+    addCard(cardName){
+      this.showDialogCard = false;
+      var formdata = new FormData();
+      formdata.append("list_name", cardName);
+      formdata.append("board_name", this.titleBoard);
+      formdata.append("username", this.$store.state.user.username);
+      var requestOptions = {
+        method: 'POST',
+        body: formdata,
+        redirect: 'follow'
+      };
+      fetch("http://127.0.0.1:5000/add_card", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.$router.go();
+            } else {
+              alert("Can not add new table");
+            }
+          })
+          .catch(error => console.log('error', error));
+    }
   }
 }
 
@@ -81,7 +164,15 @@ section{
 h3{
   font-family: "Segoe Print",serif;
   font-size: 40px;
-  line-height: 40px;
+  line-height: 60px;
+}
+.md-raised {
+  margin-top: 20px;
+  width: 300px;
+  border-radius: 20px;
+  font-size: 20px;
+  height: 50px;
+  font-family: "Segoe Print";
 }
 
 .md-toolbar{
@@ -90,5 +181,9 @@ h3{
 .viewport{
   width: 300px;
   margin: 20px;
+}
+
+.md-double-line{
+  justify-content: center;
 }
 </style>
