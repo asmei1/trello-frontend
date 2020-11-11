@@ -1,12 +1,13 @@
 <template>
   <section>
     <div class="full-control">
+
       <md-dialog :md-active.sync="showDialogList">
         <md-dialog-title>Add new list</md-dialog-title>
         <md-tab md-label="General">
           <md-field>
             <label>Title</label>
-            <md-input v-model="newListTitle" ></md-input>
+            <md-input v-model="newListTitle"></md-input>
           </md-field>
         </md-tab>
         <md-dialog-actions>
@@ -14,22 +15,26 @@
           <md-button class="md-primary" @click="addList(newListTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
+
       <md-dialog :md-active.sync="showDialogCard">
         <md-dialog-title>Add new card</md-dialog-title>
         <md-tab md-label="General">
           <md-field>
             <label>Title</label>
-            <md-input v-model="newCardTitle" ></md-input>
+            <md-input v-model="newCardTitle"></md-input>
           </md-field>
         </md-tab>
         <md-dialog-actions>
           <md-button class="md-primary" @click="showDialogCard = false">Cancel</md-button>
-          <md-button class="md-primary" @click="addList(newCardTitle, cardName)">Add</md-button>
+          <md-button class="md-primary" @click="addCard(newCardTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
+
       <md-toolbar class="md-transparent" style="width: 100%">
         <h3 class="md-title" style="font-weight: bold; color: white">{{ titleBoard }}</h3>
       </md-toolbar>
+
+
       <div v-for="(list, key) in lists" v-bind:key="list.id">
         <div class="viewport">
           <md-toolbar :md-elevation="1">
@@ -50,15 +55,18 @@
           </div>
           <md-list class="md-double-line">
             <md-list-item style="margin-right: auto; margin-left: auto;">
-            <md-button @click="showDialogCard = true" class="md-icon-button" style="color: white; background-color: #d94395;">
-              <md-icon style="color: white;">add</md-icon>
-            </md-button>
+              <md-button @click="showDialogCard = true; currentListName = key" class="md-icon-button"
+                         style="color: white; background-color: #d94395;">
+                <md-icon style="color: white;">add</md-icon>
+              </md-button>
             </md-list-item>
           </md-list>
         </div>
       </div>
       <div>
-        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add list</md-button>
+        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
+          list
+        </md-button>
       </div>
     </div>
   </section>
@@ -109,21 +117,27 @@ export default {
             if (response.ok) {
               this.$router.go();
             } else {
-              alert("Can not add new table");
+              alert("Can not add new list to this table");
             }
           })
           .catch(error => console.log('error', error));
     },
 
-    addCard(cardName){
+    addCard(cardTitle) {
       this.showDialogCard = false;
+
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
       var formdata = new FormData();
-      formdata.append("list_name", cardName);
-      formdata.append("board_name", this.titleBoard);
+      formdata.append("list_title", this.currentListName);
+      formdata.append("board_title", this.titleBoard);
+      formdata.append("new_card_title", cardTitle);
       formdata.append("username", this.$store.state.user.username);
       var requestOptions = {
         method: 'POST',
         body: formdata,
+        headers: headers,
         redirect: 'follow'
       };
       fetch("http://127.0.0.1:5000/add_card", requestOptions)
@@ -132,7 +146,7 @@ export default {
             if (response.ok) {
               this.$router.go();
             } else {
-              alert("Can not add new table");
+              alert("Can not add new card to this list");
             }
           })
           .catch(error => console.log('error', error));
@@ -144,14 +158,14 @@ export default {
 
 <style scoped>
 
-section{
+section {
   height: 100vh;
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/userBoardBackground.jpg');
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  font-family: "Segoe Print",serif;
+  font-family: "Segoe Print", serif;
 
 }
 
@@ -163,11 +177,12 @@ section{
   justify-content: left;
 }
 
-h3{
-  font-family: "Segoe Print",serif;
+h3 {
+  font-family: "Segoe Print", serif;
   font-size: 40px;
   line-height: 60px;
 }
+
 .md-raised {
   margin-top: 20px;
   width: 300px;
@@ -177,15 +192,16 @@ h3{
   font-family: "Segoe Print";
 }
 
-.md-toolbar{
+.md-toolbar {
   justify-content: center;
 }
-.viewport{
+
+.viewport {
   width: 300px;
   margin: 20px;
 }
 
-.md-double-line{
+.md-double-line {
   justify-content: center;
 }
 </style>
