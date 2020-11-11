@@ -79,7 +79,9 @@ export default {
   },
   created: async function () {
     this.titleBoard = this.$route.params.titleBoard
-    await fetch("http://localhost:5000/board_context?board_title=" + this.titleBoard)
+    var headers = new Headers();
+    headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+    await fetch("http://localhost:5000/board_context?board_title=" + this.titleBoard, {headers: headers})
         .then(response => response.json())
         .then(result => {
           this.lists = result

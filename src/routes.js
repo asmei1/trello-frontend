@@ -38,7 +38,7 @@ const router = new Router({
 })
 router.beforeEach((to, from, next) => {
     if (store.getters.isUserLogIn) {
-        if(to.name === "UserLogin") next('/userHome');
+        if(to.name === "UserLogin" || to.name === "Home") next('/userHome');
         else next();
     }
     else{
