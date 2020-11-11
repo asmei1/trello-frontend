@@ -1,7 +1,19 @@
 <template>
   <section>
     <div class="full-control">
-
+      <md-dialog :md-active.sync="showDialog">
+        <md-dialog-title>Add new board</md-dialog-title>
+        <md-tab md-label="General">
+          <md-field>
+            <label>Title</label>
+            <md-input v-model="newBoardTitle" ></md-input>
+          </md-field>
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialog = false">Cancel</md-button>
+          <md-button class="md-primary" @click="createNewTable(newBoardTitle)">Add</md-button>
+        </md-dialog-actions>
+      </md-dialog>
       <md-toolbar style="color: white; background-color: #0079BF;">
         <h3 class="md-title" style="color: white;">Active tables</h3>
       </md-toolbar>
@@ -10,7 +22,7 @@
           <md-button class="md-raised">{{ board }}</md-button>
         </router-link>
       </div>
-      <md-button @click="createNewTable('new')" class="md-fab md-primary" style="color: black; background-color: teal; margin: 30px">
+      <md-button @click="showDialog = true"  class="md-fab md-primary" style="color: black; background-color: #d94395; margin: 30px">
         <md-icon>add</md-icon>
       </md-button>
       <md-toolbar style="color: white; background-color: dimgray;">
@@ -31,7 +43,9 @@ export default {
   data(){
     return{
       archivedBoards: [],
-      nonArchivedBoards: []
+      nonArchivedBoards: [],
+      showDialog: false,
+      newBoardTitle: ''
     }
   },
   created: async function () {
@@ -39,9 +53,11 @@ export default {
     let data = await response.json()
     this.archivedBoards = data.archieve_boards;
     this.nonArchivedBoards = data.non_archieve_boards;
+    console.log(this.nonArchivedBoards)
   },
   methods: {
     createNewTable(tableName){
+      this.showDialog = false;
       var formdata = new FormData();
       formdata.append("board_name", tableName);
       formdata.append("username", this.$store.state.user.username);
@@ -69,7 +85,7 @@ export default {
 
 section{
   height: 100vh;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/homeUserBackground.jpg');
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/pink-blue-polygonal-wallapepr-1024x640.jpg');
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -119,5 +135,9 @@ section{
 }
 .md-content{
   height: 400px;
+}
+
+.md-dialog /deep/.md-dialog-container {
+  max-width: 200px;
 }
 </style>

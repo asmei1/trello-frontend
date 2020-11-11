@@ -75,7 +75,7 @@ export default {
   width: auto;
   height: 100vh;
   font-family: "Segoe Print",serif;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/abstractBackground.jpg');
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/loginBackground.jpg');
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;

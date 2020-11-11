@@ -39,6 +39,8 @@ export default {
   name: 'Header',
   data: () => ({
     user: null,
+    closeOnClick: false,
+    closeOnSelect: true
   }),
   computed:{
     isUserLogIn(){
