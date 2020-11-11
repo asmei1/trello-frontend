@@ -10,7 +10,9 @@
           <md-button class="md-raised">{{ board }}</md-button>
         </router-link>
       </div>
-      <md-button class="md-raised" style="color: black; background-color: #F0F0F0;">Create new table</md-button>
+      <md-button @click="createNewTable('new')" class="md-fab md-primary" style="color: black; background-color: teal; margin: 30px">
+        <md-icon>add</md-icon>
+      </md-button>
       <md-toolbar style="color: white; background-color: dimgray;">
         <h3 class="md-title" style="color: white;">Archived tables</h3>
       </md-toolbar>
@@ -33,14 +35,32 @@ export default {
     }
   },
   created: async function () {
-
-
     let response = await fetch(`http://localhost:5000/get_user_boards?username=User`);
     let data = await response.json()
     this.archivedBoards = data.archieve_boards;
     this.nonArchivedBoards = data.non_archieve_boards;
-
-
+  },
+  methods: {
+    createNewTable(tableName){
+      var formdata = new FormData();
+      formdata.append("board_name", tableName);
+      formdata.append("username", this.$store.state.user.username);
+      var requestOptions = {
+        method: 'POST',
+        body: formdata,
+        redirect: 'follow'
+      };
+      fetch("http://127.0.0.1:5000/add_board", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.$router.go();
+            } else {
+              alert("Can not add new table");
+            }
+          })
+          .catch(error => console.log('error', error));
+    }
   }
 }
 </script>
