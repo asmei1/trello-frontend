@@ -12,8 +12,7 @@
 <!--        </template>-->
         <template v-if="isUserLogIn">
           <div class="separator">
-            <md-menu md-direction="top-end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
-
+            <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
             <md-button md-menu-trigger class="md-icon-button" style="color: white">{{this.$store.state.user.username.charAt(0)}}</md-button>
             <md-menu-content>
               <router-link to="/userHome" style="text-decoration: none; color: white; font-family: 'Segoe Print',serif">

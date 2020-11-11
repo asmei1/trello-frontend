@@ -29,9 +29,9 @@
         <h3 class="md-title" style="color: white;">Archived tables</h3>
       </md-toolbar>
       <div v-for="(board) in archivedBoards" v-bind:key="board.id">
-        <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">
+<!--        <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">-->
           <md-button class="md-raised">{{ board}}</md-button>
-        </router-link>
+<!--        </router-link>-->
       </div>
     </div>
   </section>
@@ -75,7 +75,7 @@ export default {
           .then(response => {
             console.log(response.ok)
             if (response.ok) {
-              this.$router.go();
+              this.nonArchivedBoards.push(tableName);
             } else {
               alert("Can not add new table");
             }

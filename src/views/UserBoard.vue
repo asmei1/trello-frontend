@@ -31,7 +31,19 @@
       </md-dialog>
 
       <md-toolbar class="md-transparent" style="width: 100%">
-        <h3 class="md-title" style="font-weight: bold; color: white">{{ titleBoard }}</h3>
+        <div class="md-toolbar-section-end" style="width:100%;">
+          <h3 class="md-title" style="font-weight: bold; color: white">{{ titleBoard }}</h3>
+        </div>
+        <div class="separator md-toolbar-section-end">
+          <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
+            <md-button md-menu-trigger  class="md-icon-button" style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))">
+              <md-icon style="color: white;">more_vert</md-icon>
+            </md-button>
+            <md-menu-content>
+                <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
+            </md-menu-content>
+          </md-menu>
+        </div>
       </md-toolbar>
 
 
@@ -83,6 +95,8 @@ export default {
       listName: '',
       showDialogList: false,
       showDialogCard: false,
+      closeOnClick: false,
+      closeOnSelect: true
     }
   },
   created: async function () {
@@ -98,13 +112,13 @@ export default {
         .catch(error => console.log('error', error));
   },
   methods: {
-    addList(listName) {
+    addList(newListName) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       this.showDialogList = false;
       var formdata = new FormData();
       formdata.append("board_title", this.titleBoard);
-      formdata.append("new_list_title", listName);
+      formdata.append("new_list_title", newListName);
       var requestOptions = {
         method: 'POST',
         body: formdata,
@@ -113,9 +127,8 @@ export default {
       };
       fetch("http://127.0.0.1:5000/add_list", requestOptions)
           .then(response => {
-            console.log(response.ok)
             if (response.ok) {
-              this.$router.go();
+              this.$set(this.lists, newListName, []);
             } else {
               alert("Can not add new list to this table");
             }
@@ -144,9 +157,33 @@ export default {
           .then(response => {
             console.log(response.ok)
             if (response.ok) {
-              this.$router.go();
+              this.lists[this.currentListName].push(cardTitle);
             } else {
               alert("Can not add new card to this list");
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    archiveBoard() {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("board_name", this.titleBoard);
+      formdata.append("username", this.$store.state.user.username);
+      console.log(this.titleBoard)
+      console.log(this.$store.state.user.username)
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch("http://localhost:5000/archieve_board", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if(response.ok){
+              this.$router.replace("/userHome");
             }
           })
           .catch(error => console.log('error', error));
@@ -192,11 +229,11 @@ h3 {
   font-family: "Segoe Print";
 }
 
-.md-toolbar {
+.md-toolbar{
   justify-content: center;
 }
 
-.viewport {
+.viewport{
   width: 300px;
   margin: 20px;
 }
