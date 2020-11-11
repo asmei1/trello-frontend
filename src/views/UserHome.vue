@@ -2,34 +2,34 @@
   <section>
     <div class="full-control">
 
-        <md-toolbar style="color: white; background-color: #0079BF;">
-          <h3 class="md-title" style="color: white;">Active tables</h3>
-        </md-toolbar>
-        <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
-          <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">
-            <md-button class="md-raised">{{ board }}</md-button>
-          </router-link>
-        </div>
-        <md-button class="md-raised" style="color: black; background-color: #F0F0F0;">Create new table</md-button>
-        <md-toolbar style="color: white; background-color: dimgray;">
-          <h3 class="md-title" style="color: white;">Archived tables</h3>
-        </md-toolbar>
-        <div v-for="(board) in archivedBoards" v-bind:key="board.id">
-          <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">
-            <md-button  class="md-raised">{{ board}}</md-button>
-          </router-link>
-        </div>
+      <md-toolbar style="color: white; background-color: #0079BF;">
+        <h3 class="md-title" style="color: white;">Active tables</h3>
+      </md-toolbar>
+      <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
+        <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">
+          <md-button class="md-raised">{{ board }}</md-button>
+        </router-link>
+      </div>
+      <md-button class="md-raised" style="color: black; background-color: #F0F0F0;">Create new table</md-button>
+      <md-toolbar style="color: white; background-color: dimgray;">
+        <h3 class="md-title" style="color: white;">Archived tables</h3>
+      </md-toolbar>
+      <div v-for="(board) in archivedBoards" v-bind:key="board.id">
+        <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">
+          <md-button class="md-raised">{{ board}}</md-button>
+        </router-link>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
 export default {
-name: "UserHome",
+  name: "UserHome",
   data(){
-  return{
-    archivedBoards: [],
-    nonArchivedBoards: []
+    return{
+      archivedBoards: [],
+      nonArchivedBoards: []
     }
   },
   created: async function () {
@@ -41,11 +41,6 @@ name: "UserHome",
     this.nonArchivedBoards = data.non_archieve_boards;
 
 
-  },
-  methods:{
-    // gotToBoard(){
-    //   this.$router.replace("/userBoard");
-    // }
   }
 }
 </script>
