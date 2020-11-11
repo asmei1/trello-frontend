@@ -49,7 +49,9 @@ export default {
     }
   },
   created: async function () {
-    let response = await fetch(`http://localhost:5000/get_user_boards?username=User`);
+    var headers = new Headers();
+    headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+    let response = await fetch(`http://localhost:5000/get_user_boards?username=User`, {headers: headers});
     let data = await response.json()
     this.archivedBoards = data.archieve_boards;
     this.nonArchivedBoards = data.non_archieve_boards;
@@ -58,12 +60,15 @@ export default {
   methods: {
     createNewTable(tableName){
       this.showDialog = false;
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
       formdata.append("board_name", tableName);
       formdata.append("username", this.$store.state.user.username);
       var requestOptions = {
         method: 'POST',
         body: formdata,
+        headers: headers,
         redirect: 'follow'
       };
       fetch("http://127.0.0.1:5000/add_board", requestOptions)

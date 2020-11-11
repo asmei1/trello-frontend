@@ -48,18 +48,25 @@ export default {
     }
   },
   methods:{
-    logout: function () {
+    logout: async function () {
       this.$store.commit('USER_LOGOUT');
-      this.$router.push("/");
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      await fetch("http://localhost:5000/logout", {headers: headers, method: "POST"})
+          .then(response => response.json())
+          .then(() => {
+            this.$router.push("/");
+          })
+          .catch(error => console.log('error', error));
+
     }
   },
-  mounted() {
+  created() {
     this.user = this.$store.state.user;
   },
   watch:{
     '$store.state.user'(user) {
-      console.log(user);
-      this.user = user;
+      this.user = this.$store.state.user;
     }
   }
 }

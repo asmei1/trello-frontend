@@ -10,16 +10,17 @@
         <form name="userForm">
           <md-field>
             <label>Username</label>
-            <md-input v-model="username" ></md-input>
+            <md-input v-on:keyup.enter="signIn" v-model="username"></md-input>
             <span class="md-suffix"></span>
           </md-field>
 
           <md-field :md-toggle-password="false">
             <label>Password</label>
-            <md-input v-model="userPassword" type="password"></md-input>
+            <md-input v-on:keyup.enter="signIn" v-model="userPassword" type="password"></md-input>
           </md-field>
         </form>
-        <md-button @click="signIn()" class="md-raised" style="color: white; background-color: #0079BF;">Sign in</md-button>
+        <md-button @click="signIn()" class="md-raised" style="color: white; background-color: #0079BF;">Sign in
+        </md-button>
       </div>
     </div>
   </section>
@@ -30,17 +31,14 @@
 
 export default {
   name: "UserLogin",
-  components: {
-
-  },
+  components: {},
   data() {
     return {
       username: '',
       userPassword: ''
     }
   },
-  methods:{
-
+  methods: {
     async signIn() {
       var headers = new Headers();
       var formdata = new FormData();
@@ -52,18 +50,21 @@ export default {
         body: formdata,
         redirect: 'follow'
       };
+
       fetch("http://127.0.0.1:5000/login", requestOptions)
-          .then(response => {
+          .then(async response => {
+            const data = await response.json();
             if (response.ok) {
               //in future we can get whole information about user here
               this.$store.commit('USER_LOGIN', {"username": this.username});
-              this.$store.commit('USER_TOKEN', response.json());
+              this.$store.commit('USER_TOKEN', data.access_token);
 
-              this.$router.replace("/userHome");
+              await this.$router.replace("/userHome");
             } else {
               alert("Invalid Email or Password");
             }
           })
+          .t
           .catch(error => console.log('error', error));
     }
   }
@@ -74,7 +75,7 @@ export default {
 .full-control {
   width: auto;
   height: 100vh;
-  font-family: "Segoe Print",serif;
+  font-family: "Segoe Print", serif;
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/loginBackground.jpg');
   background-position: top left;
   background-repeat: no-repeat;
@@ -91,7 +92,7 @@ export default {
   background-color: rgba(255, 255, 255, 0.7);
 }
 
-.md-raised{
+.md-raised {
   width: 500px;
   border-radius: 20px;
   font-size: 20px;
@@ -102,8 +103,6 @@ hr.line1 {
   border-top: 1px solid #0079bf;
   width: 300px;
 }
-
-
 
 
 </style>
