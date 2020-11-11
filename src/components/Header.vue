@@ -66,7 +66,7 @@ export default {
   },
   watch:{
     '$store.state.user'(user) {
-      this.user = this.$store.state.user;
+      this.user = user;
     }
   }
 }
