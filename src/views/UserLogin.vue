@@ -42,24 +42,25 @@ export default {
   methods:{
 
     async signIn() {
-      // POST request using fetch with async/await
+      var headers = new Headers();
       var formdata = new FormData();
       formdata.append("username", this.username);
       formdata.append("password", this.userPassword);
       var requestOptions = {
         method: 'POST',
-        // headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: formdata,
         redirect: 'follow'
       };
       fetch("http://127.0.0.1:5000/login", requestOptions)
           .then(response => {
-            console.log(response.ok)
-            if(response.ok)
-            {
+            if (response.ok) {
+              //in future we can get whole information about user here
+              this.$store.commit('USER_LOGIN', {"username": this.username});
+              this.$store.commit('USER_TOKEN', response.json());
+
               this.$router.replace("/userHome");
-            }
-            else{
+            } else {
               alert("Invalid Email or Password");
             }
           })
