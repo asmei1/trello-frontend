@@ -65,8 +65,9 @@ export default {
     this.user = this.$store.state.user;
   },
   watch:{
+    // eslint-disable-next-line no-unused-vars
     '$store.state.user'(user) {
-      this.user = user;
+      this.user = this.$store.state.user;
     }
   }
 }
