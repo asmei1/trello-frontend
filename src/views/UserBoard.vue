@@ -7,7 +7,7 @@
       <div v-for="(list) in lists" v-bind:key="list.id">
         <div class="viewport">
           <md-toolbar :md-elevation="1">
-            <span class="md-title">{{ list }}</span>
+            <span class="md-title">{{ list.id }}</span>
           </md-toolbar>
           <div v-for="(card) in list" v-bind:key="card.id">
             <md-list class="md-double-line">
@@ -89,6 +89,6 @@ h3{
 }
 .viewport{
   width: 300px;
-  margin: 20px
+  margin: 20px;
 }
 </style>
