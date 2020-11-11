@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import UserLogin from './views/UserLogin.vue'
 import UserHome from './views/UserHome.vue'
+import UserBoard from './views/UserBoard.vue'
 
 
 
@@ -25,6 +26,10 @@ export default new Router({
     {   name: 'UserHome',
         path: '/userHome',
         component: UserHome
+    },
+    {   name: 'UserBoard',
+        path: '/userBoard/:titleBoard',
+        component: UserBoard
     }
 ]
 })
