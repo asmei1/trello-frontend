@@ -40,31 +40,57 @@
               <md-icon style="color: white;">more_vert</md-icon>
             </md-button>
             <md-menu-content>
-                <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
+              <md-menu-item>Edit title</md-menu-item>
+              <md-menu-item>Edit background</md-menu-item>
+              <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
             </md-menu-content>
           </md-menu>
         </div>
       </md-toolbar>
 
+      <div class="wrapp">
 
       <div v-for="(list, key) in lists" v-bind:key="list.id">
         <div class="viewport">
           <md-toolbar :md-elevation="1">
-            <span class="md-title">{{ key }}</span>
-          </md-toolbar>
-          <div v-for="(card) in list" v-bind:key="card.id">
-            <md-list class="md-double-line">
-              <md-list-item>
-                <div class="md-list-item-text">
-                  <span>{{ card }}</span>
-                </div>
-                <md-button class="md-icon-button">
-                  <md-icon>edit</md-icon>
+              <span class="md-title">{{ key }}</span>
+            <div class="separator md-toolbar-section-end">
+              <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
+                <md-button md-menu-trigger  class="md-icon-button" style="background: transparent">
+                  <md-icon style="color: black;">more_vert</md-icon>
                 </md-button>
-              </md-list-item>
-              <md-divider></md-divider>
-            </md-list>
-          </div>
+                <md-menu-content>
+                  <md-menu-item>Edit title</md-menu-item>
+                  <md-menu-item>Move list</md-menu-item>
+                  <md-menu-item>Archive list</md-menu-item>
+                </md-menu-content>
+              </md-menu>
+            </div>
+          </md-toolbar>
+          <md-content class="md-scrollbar">
+            <div v-for="(card) in list" v-bind:key="card.id">
+              <md-list class="md-double-line">
+                <md-list-item>
+                  <div class="md-list-item-text">
+                    <span>{{ card }}</span>
+                  </div>
+  <!--                <div class="separator md-toolbar-section-end">-->
+  <!--                  <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">-->
+  <!--                    <md-button md-menu-trigger  class="md-icon-button" style="background: transparent">-->
+  <!--                      <md-icon style="color: black;">more_vert</md-icon>-->
+  <!--                    </md-button>-->
+  <!--                    <md-menu-content>-->
+  <!--                      <md-menu-item>Edit title</md-menu-item>-->
+  <!--                      <md-menu-item>Edit background</md-menu-item>-->
+  <!--                      <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>-->
+  <!--                    </md-menu-content>-->
+  <!--                  </md-menu>-->
+  <!--                </div>-->
+                </md-list-item>
+                <md-divider></md-divider>
+              </md-list>
+            </div>
+          </md-content>
           <md-list class="md-double-line">
             <md-list-item style="margin-right: auto; margin-left: auto;">
               <md-button @click="showDialogCard = true; currentListName = key" class="md-icon-button"
@@ -75,10 +101,11 @@
           </md-list>
         </div>
       </div>
-      <div>
-        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
-          list
-        </md-button>
+        <div>
+          <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
+            list
+          </md-button>
+        </div>
       </div>
     </div>
   </section>
@@ -206,12 +233,24 @@ section {
 
 }
 
-
 .full-control {
   display: flex;
   flex-wrap: wrap;
   padding-top: 100px;
   justify-content: left;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.wrapp {
+  display: flex;
+  /*flex-wrap: wrap;*/
+  justify-content: left;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  height: 770px;
 }
 
 h3 {
@@ -240,5 +279,15 @@ h3 {
 
 .md-double-line {
   justify-content: center;
+}
+
+.md-content {
+  max-width: 400px;
+  max-height: 550px;
+  overflow: auto;
+}
+
+span{
+  line-height: 30px;
 }
 </style>
