@@ -51,7 +51,7 @@ export default {
   created: async function () {
     var headers = new Headers();
     headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-    let response = await fetch(`http://localhost:5000/get_user_boards?username=User`, {headers: headers});
+    let response = await fetch(this.$API + `/get_user_boards?username=User`, {headers: headers});
     let data = await response.json()
     this.archivedBoards = data.archieve_boards;
     this.nonArchivedBoards = data.non_archieve_boards;
@@ -71,7 +71,7 @@ export default {
         headers: headers,
         redirect: 'follow'
       };
-      fetch("http://127.0.0.1:5000/add_board", requestOptions)
+      fetch(this.$API + "/add_board", requestOptions)
           .then(response => {
             console.log(response.ok)
             if (response.ok) {

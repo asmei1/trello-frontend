@@ -13,6 +13,11 @@ const store = new Vuex.Store({
     getters: {
         isUserLogIn: (state) => {
             return state.user;
+        },
+        api: (endpoint)=>{
+            return (process.env.NODE_ENV === 'development')
+                ? "http://localhost:5000"
+                : "https://trelloprojectapp.herokuapp.com" + endpoint;
         }
     },
     mutations: {

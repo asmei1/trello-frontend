@@ -103,7 +103,7 @@ export default {
     this.titleBoard = this.$route.params.titleBoard
     var headers = new Headers();
     headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-    await fetch("http://localhost:5000/board_context?board_title=" + this.titleBoard, {headers: headers})
+    await fetch(this.$API + "/board_context?board_title=" + this.titleBoard, {headers: headers})
         .then(response => response.json())
         .then(result => {
           this.lists = result
@@ -125,7 +125,7 @@ export default {
         redirect: 'follow',
         header: headers
       };
-      fetch("http://127.0.0.1:5000/add_list", requestOptions)
+      fetch(this.$API + "/add_list", requestOptions)
           .then(response => {
             if (response.ok) {
               this.$set(this.lists, newListName, []);
@@ -153,7 +153,7 @@ export default {
         headers: headers,
         redirect: 'follow'
       };
-      fetch("http://127.0.0.1:5000/add_card", requestOptions)
+      fetch(this.$API + "/add_card", requestOptions)
           .then(response => {
             console.log(response.ok)
             if (response.ok) {
@@ -179,7 +179,7 @@ export default {
         redirect: 'follow'
       };
 
-      fetch("http://localhost:5000/archieve_board", requestOptions)
+      fetch(this.$API + "/archieve_board", requestOptions)
           .then(response => {
             console.log(response.ok)
             if(response.ok){

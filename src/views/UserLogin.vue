@@ -51,7 +51,7 @@ export default {
         redirect: 'follow'
       };
 
-      fetch("http://127.0.0.1:5000/login", requestOptions)
+      fetch(this.$API + "/login", requestOptions)
           .then(async response => {
             const data = await response.json();
             if (response.ok) {
