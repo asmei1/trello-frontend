@@ -51,7 +51,7 @@ export default {
   created: async function () {
     var headers = new Headers();
     headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-    let response = await fetch(this.$API + `/get_user_boards?username=User`, {headers: headers});
+    let response = await fetch(this.$API + `/get_user_boards?username=` + this.$store.state.user.username, {headers: headers});
     let data = await response.json()
     this.archivedBoards = data.archieve_boards;
     this.nonArchivedBoards = data.non_archieve_boards;

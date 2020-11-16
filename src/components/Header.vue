@@ -48,12 +48,12 @@ export default {
   },
   methods:{
     logout: async function () {
-      this.$store.commit('USER_LOGOUT');
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-      await fetch("http://localhost:5000/logout", {headers: headers, method: "POST"})
+      await fetch(this.$API + "/logout", {headers: headers, method: "POST"})
           .then(response => response.json())
           .then(() => {
+            this.$store.commit('USER_LOGOUT');
             this.$router.push("/");
           })
           .catch(error => console.log('error', error));
