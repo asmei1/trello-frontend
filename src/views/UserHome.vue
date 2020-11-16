@@ -18,8 +18,8 @@
         <h3 class="md-title" style="color: white;">Active tables</h3>
       </md-toolbar>
       <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
-        <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">
-          <md-button class="md-raised">{{ board }}</md-button>
+        <router-link :to="{name: 'UserBoard', params: { boardID: board.id, boardTitle: board.title }}">
+          <md-button class="md-raised">{{ board.title }}</md-button>
         </router-link>
       </div>
       <md-button @click="showDialog = true"  class="md-fab md-primary" style="color: black; background-color: #d94395; margin: 30px">
@@ -48,23 +48,25 @@ export default {
       newBoardTitle: ''
     }
   },
-  created: async function () {
-    var headers = new Headers();
-    headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-    let response = await fetch(this.$API + `/get_user_boards?username=` + this.$store.state.user.username, {headers: headers});
-    let data = await response.json()
-    this.archivedBoards = data.archieve_boards;
-    this.nonArchivedBoards = data.non_archieve_boards;
-    console.log(this.nonArchivedBoards)
+  created(){
+    this.loadBoards();
   },
   methods: {
+    loadBoards: async function(){
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      let response = await fetch(this.$API + `/get_user_boards?username=` + this.$store.state.user.username, {headers: headers});
+      let data = await response.json()
+      this.archivedBoards = data.archieve_boards;
+      this.nonArchivedBoards = data.non_archieve_boards;
+      console.log(this.nonArchivedBoards)
+    },
     createNewTable(tableName){
       this.showDialog = false;
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
       formdata.append("board_name", tableName);
-      formdata.append("username", this.$store.state.user.username);
       var requestOptions = {
         method: 'POST',
         body: formdata,
@@ -75,7 +77,7 @@ export default {
           .then(response => {
             console.log(response.ok)
             if (response.ok) {
-              this.nonArchivedBoards.push(tableName);
+              this.loadBoards();
             } else {
               alert("Can not add new table");
             }

@@ -30,7 +30,7 @@ const router = new Router({
         },
         {
             name: 'UserBoard',
-            path: '/userBoard/:titleBoard',
+            path: '/userBoard/:boardID/:boardTitle',
             component: UserBoard
         }
     ],
