@@ -29,8 +29,8 @@
         <h3 class="md-title" style="color: white;">Archived tables</h3>
       </md-toolbar>
       <div v-for="(board) in archivedBoards" v-bind:key="board.id">
-<!--        <router-link :to="{name: 'UserBoard', params: { titleBoard: board }}">-->
-          <md-button class="md-raised">{{ board}}</md-button>
+<!--        <router-link :to="{name: 'UserBoard', params:{ boardID: board.id, boardTitle: board.title }}">-->
+          <md-button class="md-raised">{{ board.title }}</md-button>
 <!--        </router-link>-->
       </div>
     </div>
