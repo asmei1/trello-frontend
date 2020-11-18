@@ -10,13 +10,13 @@
         <form name="userForm">
           <md-field>
             <label>Username</label>
-            <md-input v-model="username"></md-input>
+            <md-input v-on:keyup.enter="signIn" v-model="username"></md-input>
             <span class="md-suffix"></span>
           </md-field>
 
           <md-field :md-toggle-password="false">
             <label>Password</label>
-            <md-input v-model="userPassword" type="password"></md-input>
+            <md-input v-on:keyup.enter="signIn" v-model="userPassword" type="password"></md-input>
           </md-field>
         </form>
         <md-button @click="signIn()" class="md-raised" style="color: white; background-color: #0079BF;">Sign in
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+
 
 export default {
   name: "UserLogin",
@@ -50,23 +51,23 @@ export default {
         redirect: 'follow'
       };
 
-      fetch("http://127.0.0.1:5000/login", requestOptions)
-          .then(response => {
+      fetch(this.$API + "/login", requestOptions)
+          .then(async response => {
+            const data = await response.json();
             if (response.ok) {
               //in future we can get whole information about user here
               this.$store.commit('USER_LOGIN', {"username": this.username});
-              this.$store.commit('USER_TOKEN', response.json());
+              this.$store.commit('USER_TOKEN', data.access_token);
 
-              this.$router.replace("/userHome");
+              await this.$router.replace("/userHome");
             } else {
               alert("Invalid Email or Password");
             }
           })
+          .t
           .catch(error => console.log('error', error));
     }
-  },
-
-
+  }
 }
 </script>
 
@@ -75,7 +76,7 @@ export default {
   width: auto;
   height: 100vh;
   font-family: "Segoe Print", serif;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/abstractBackground.jpg');
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/loginBackground.jpg');
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;

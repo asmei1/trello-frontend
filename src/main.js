@@ -11,8 +11,10 @@ Vue.config.productionTip = false
 
 Vue.use(VueMaterial)
 
+Vue.prototype.$API = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000'
+    : 'https://trelloprojectapp.herokuapp.com';
 import store from './store'
-
 new Vue({
   router,
   store,
