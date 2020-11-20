@@ -10,19 +10,19 @@
         <form name="userForm">
           <md-field>
             <label>Username</label>
-            <md-input v-on:keyup.enter="signIn" v-model="username"></md-input>
+            <md-input v-on:keyup.enter="register" v-model="username"></md-input>
             <span class="md-suffix"></span>
           </md-field>
 
           <md-field>
             <label>Email</label>
-            <md-input v-on:keyup.enter="signIn" v-model="email"></md-input>
+            <md-input v-on:keyup.enter="register" v-model="email"></md-input>
             <span class="md-suffix"></span>
           </md-field>
 
           <md-field :md-toggle-password="false">
             <label>Password</label>
-            <md-input v-on:keyup.enter="signIn" v-model="userPassword" type="password"></md-input>
+            <md-input v-on:keyup.enter="register" v-model="userPassword" type="password"></md-input>
           </md-field>
 
           <template v-if="duplicatedUser">
