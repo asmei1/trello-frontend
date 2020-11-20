@@ -27,7 +27,7 @@
 
           <template v-if="duplicatedUser">
             <md-field>
-              <label style="color:red">Given user name exists, please, change it!</label>
+              <label style="color:red">User name or email exists, please, change it!</label>
             </md-field>
           </template>
           <div :key="tooShortPassword" v-if="tooShortPassword">

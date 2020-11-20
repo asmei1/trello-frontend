@@ -53,6 +53,9 @@ export default {
       return this.user;
     }
   },
+  created() {
+    this.user = this.$store.state.user;
+  },
   methods: {
     checkIfTokenIsStillActive: async function () {
       const token = store.state.token;
@@ -61,6 +64,7 @@ export default {
       const response = await fetch(this.$API + "/check_user_activity", {headers: headers, method: "GET"});
       const data = await response.json();
       if (token !== "" && data.status_code === 401) {
+        console.log("should send")
         const refreshResponse = await fetch(this.$API + "/refresh_token", {headers: headers, method: "POST"});
         const refreshData = await refreshResponse.json();
         if (refreshResponse.ok) {
@@ -71,9 +75,6 @@ export default {
           store.commit('USER_LOGOUT');
           this.$router.push("/");
         }
-      } else if (response.statusCode === 401) {
-        this.$store.commit('USER_LOGOUT');
-        this.$router.push("/");
       }
     },
     checkIfTokenIsStillActiveWorker: function () {
@@ -86,6 +87,7 @@ export default {
           .then(response => response.json())
           .then(() => {
             this.$store.commit('USER_LOGOUT');
+            this.$router.push("/");
           })
           .catch(error => console.log('error', error));
 
