@@ -4,6 +4,8 @@ import Home from './views/Home.vue'
 import UserLogin from './views/UserLogin.vue'
 import UserHome from './views/UserHome.vue'
 import UserBoard from './views/UserBoard.vue'
+import UserRegistration from "@/views/UserRegistration";
+import UserActivation from "@/views/UserActivation";
 import store from './store/index'
 
 Vue.use(Router)
@@ -16,7 +18,11 @@ const router = new Router({
             name: 'UserLogin',
             path: '/login',
             component: UserLogin,
-
+        },
+        {
+            name: 'UserRegistration',
+            path: '/registration',
+            component: UserRegistration,
         },
         {
             name: 'Home',
@@ -32,17 +38,22 @@ const router = new Router({
             name: 'UserBoard',
             path: '/userBoard/:boardID/:boardTitle',
             component: UserBoard
+        },
+        {
+            name: 'UserActivation',
+            path: '/finalize/:token',
+            component: UserActivation
         }
     ],
 
 })
 router.beforeEach((to, from, next) => {
     if (store.getters.isUserLogIn) {
-        if(to.name === "UserLogin" || to.name === "Home") next('/userHome');
+        if(to.name === "UserLogin" || to.name === "UserActivation" || to.name === "UserRegistration" || to.name === "Home") next('/userHome');
         else next();
     }
     else{
-        if(to.name === "UserLogin" || to.name === "Home") next();
+        if(to.name === "UserLogin" || to.name === "UserActivation" || to.name === "UserRegistration" || to.name === "Home") next();
         else next("/");
     }
 });

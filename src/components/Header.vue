@@ -27,7 +27,7 @@
           </div>
         </template>
         <template v-else>
-          <md-button class="md-raised" style="color: white; background-color: #d94395;">Register</md-button>
+          <md-button :to="{path: '/registration'}" class="md-raised" style="color: white; background-color: #d94395;">Register</md-button>
           <md-button :to="{path: '/login'}" class="md-raised" style="color: white; background-color: #d94395;">Login
           </md-button>
         </template>
@@ -60,14 +60,14 @@ export default {
       headers.append("Authorization", 'Bearer ' + token);
       const response = await fetch(this.$API + "/check_user_activity", {headers: headers, method: "GET"});
       const data = await response.json();
-      if (token !== "" && data.status_code == 401) {
+      if (token !== "" && data.status_code === 401) {
         const refreshResponse = await fetch(this.$API + "/refresh_token", {headers: headers, method: "POST"});
         const refreshData = await refreshResponse.json();
         if (refreshResponse.ok) {
           console.log("Auth token refresh");
           store.commit('USER_TOKEN', refreshData.access_token);
         } else {
-          alert("Cannot refresh your auth token!");
+          console.log("Cannot refresh your auth token!");
           store.commit('USER_LOGOUT');
           this.$router.push("/");
         }
