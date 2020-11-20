@@ -21,6 +21,11 @@
         </form>
         <md-button @click="signIn()" class="md-raised" style="color: white; background-color: #0079BF;">Sign in
         </md-button>
+        <br>
+        <br>
+        <router-link to="/reset_password" style="text-decoration: none; color: inherit;">
+          <span>Forget password?</span>
+        </router-link>
       </div>
     </div>
   </section>
