@@ -94,7 +94,7 @@
             </md-content>
             <md-list class="md-double-line">
               <md-list-item style="margin-right: auto; margin-left: auto;">
-                <md-button @click="showDialogCard = true; currentListName = key" class="md-icon-button"
+                <md-button @click="showDialogCard = true; currentListID = list.id" class="md-icon-button"
                            style="color: white; background-color: #d94395;">
                   <md-icon style="color: white;">add</md-icon>
                 </md-button>
