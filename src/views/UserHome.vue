@@ -17,22 +17,28 @@
       <md-toolbar style="color: white; background-color: #0079BF;">
         <h3 class="md-title" style="color: white;">Active tables</h3>
       </md-toolbar>
-      <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
-        <router-link :to="{name: 'UserBoard', params: { boardID: board.id, boardTitle: board.title }}">
-          <md-button class="md-raised">{{ board.title }}</md-button>
-        </router-link>
-      </div>
-      <md-button @click="showDialog = true"  class="md-fab md-primary" style="color: black; background-color: #d94395; margin: 30px">
-        <md-icon>add</md-icon>
-      </md-button>
+      <md-content class="md-scrollbar" style="width: 800px; height: 100px; background-color: transparent;">
+        <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
+          <router-link :to="{name: 'UserBoard', params: { boardID: board.id, boardTitle: board.title }}">
+            <md-button class="md-raised">{{ board.title }}</md-button>
+          </router-link>
+        </div>
+        <md-button @click="showDialog = true"  class="md-fab md-primary" style="color: black; background-color: #d94395; margin: 30px">
+          <md-icon>add</md-icon>
+        </md-button>
+      </md-content>
       <md-toolbar style="color: white; background-color: dimgray;">
         <h3 class="md-title" style="color: white;">Archived tables</h3>
       </md-toolbar>
-      <div v-for="(board) in archivedBoards" v-bind:key="board.id">
-<!--        <router-link :to="{name: 'UserBoard', params:{ boardID: board.id, boardTitle: board.title }}">-->
-          <md-button class="md-raised">{{ board.title }}</md-button>
-<!--        </router-link>-->
-      </div>
+
+        <div v-for="(board) in archivedBoards" v-bind:key="board.id">
+          <md-content class="md-scrollbar" style="width: 800px; height: 100px; background-color: transparent;">
+  <!--        <router-link :to="{name: 'UserBoard', params:{ boardID: board.id, boardTitle: board.title }}">-->
+            <md-button class="md-raised">{{ board.title }}</md-button>
+  <!--        </router-link>-->
+          </md-content>
+        </div>
+
     </div>
   </section>
 </template>

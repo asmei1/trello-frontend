@@ -30,6 +30,34 @@
         </md-dialog-actions>
       </md-dialog>
 
+      <md-dialog :md-active.sync="showDialogRenameList">
+        <md-dialog-title>Rename</md-dialog-title>
+        <md-tab md-label="General">
+          <md-field>
+            <label>New title</label>
+            <md-input v-model="newTitleOfList"></md-input>
+          </md-field>
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialogRenameList = false">Cancel</md-button>
+          <md-button class="md-primary" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+
+      <md-dialog :md-active.sync="showDialogRenameBoard">
+        <md-dialog-title>Rename</md-dialog-title>
+        <md-tab md-label="General">
+          <md-field>
+            <label>New title</label>
+            <md-input v-model="newTitleOfBoard"></md-input>
+          </md-field>
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-primary" @click="showDialogRenameBoard = false">Cancel</md-button>
+          <md-button class="md-primary" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+
       <md-toolbar class="md-transparent" style="width: 100%">
         <div class="md-toolbar-section-end" style="width:100%;">
           <h3 class="md-title" style="font-weight: bold; color: white">{{ board.title }}</h3>
@@ -41,8 +69,9 @@
               <md-icon style="color: white;">more_vert</md-icon>
             </md-button>
             <md-menu-content>
-              <md-menu-item>Edit title</md-menu-item>
+              <md-menu-item @click="showDialogRenameBoard = true;">Edit title</md-menu-item>
               <md-menu-item>Edit background</md-menu-item>
+              <md-menu-item>Archived items</md-menu-item>
               <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
             </md-menu-content>
           </md-menu>
@@ -52,62 +81,76 @@
       <div class="wrapp">
 
         <div v-for="(list) in lists" v-bind:key="list.id">
-          <div class="viewport">
-            <md-toolbar :md-elevation="1">
-              <span class="md-title">{{ list.title }}</span>
-              <div class="separator md-toolbar-section-end">
-                <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
-                  <md-button md-menu-trigger  class="md-icon-button" style="background: transparent">
-                    <md-icon style="color: black;">more_vert</md-icon>
+          <template v-if="!list.is_archieve">
+            <div class="viewport">
+              <md-toolbar :md-elevation="1">
+                <span class="md-title">{{ list.title }}</span>
+                <div class="separator md-toolbar-section-end">
+                  <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
+                    <md-button md-menu-trigger class="md-icon-button" style="background: transparent">
+                      <md-icon style="color: black;">more_vert</md-icon>
+                    </md-button>
+                    <md-menu-content>
+                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title</md-menu-item>
+                      <md-menu-item>Move list</md-menu-item>
+                      <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
+                    </md-menu-content>
+                  </md-menu>
+                </div>
+              </md-toolbar>
+
+              <md-content class="md-scrollbar">
+                <div v-for="(card) in list.cards" v-bind:key="card.id">
+                  <template v-if="!card.is_archieve">
+                    <md-card md-with-hover>
+                      <md-ripple>
+                        <md-card-header>
+                          <div class="md-title">{{ card.title }}</div>
+                        </md-card-header>
+                      </md-ripple>
+                    </md-card>
+                  </template>
+                  <!--                <md-list class="md-double-line">-->
+                  <!--                  <md-list-item>-->
+                  <!--                    <div class="md-list-item-text">-->
+                  <!--                      <span>{{ card.title }}</span>-->
+                  <!--                    </div>-->
+                  <!--                    &lt;!&ndash;                <div class="separator md-toolbar-section-end">&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                  <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                    <md-button md-menu-trigger  class="md-icon-button" style="background: transparent">&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                      <md-icon style="color: black;">more_vert</md-icon>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                    </md-button>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                    <md-menu-content>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                      <md-menu-item>Edit title</md-menu-item>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                      <md-menu-item>Edit background</md-menu-item>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                      <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                    </md-menu-content>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                  </md-menu>&ndash;&gt;-->
+                  <!--                    &lt;!&ndash;                </div>&ndash;&gt;-->
+                  <!--                  </md-list-item>-->
+                  <!--                  <md-divider></md-divider>-->
+                  <!--                </md-list>-->
+                </div>
+
+              </md-content>
+              <md-list class="md-double-line">
+                <md-list-item style="margin-right: auto; margin-left: auto;">
+                  <md-button @click="showDialogCard = true; currentListID = list.id" class="md-icon-button"
+                             style="color: white; background-color: #d94395;">
+                    <md-icon style="color: white;">add</md-icon>
                   </md-button>
-                  <md-menu-content>
-                    <md-menu-item>Edit title</md-menu-item>
-                    <md-menu-item>Move list</md-menu-item>
-                    <md-menu-item>Archive list</md-menu-item>
-                  </md-menu-content>
-                </md-menu>
-              </div>
-            </md-toolbar>
-            <md-content class="md-scrollbar">
-              <div v-for="(card) in list.cards" v-bind:key="card.id">
-                <md-list class="md-double-line">
-                  <md-list-item>
-                    <div class="md-list-item-text">
-                      <span>{{ card.title }}</span>
-                    </div>
-                    <!--                <div class="separator md-toolbar-section-end">-->
-                    <!--                  <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">-->
-                    <!--                    <md-button md-menu-trigger  class="md-icon-button" style="background: transparent">-->
-                    <!--                      <md-icon style="color: black;">more_vert</md-icon>-->
-                    <!--                    </md-button>-->
-                    <!--                    <md-menu-content>-->
-                    <!--                      <md-menu-item>Edit title</md-menu-item>-->
-                    <!--                      <md-menu-item>Edit background</md-menu-item>-->
-                    <!--                      <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>-->
-                    <!--                    </md-menu-content>-->
-                    <!--                  </md-menu>-->
-                    <!--                </div>-->
-                  </md-list-item>
-                  <md-divider></md-divider>
-                </md-list>
-              </div>
-            </md-content>
-            <md-list class="md-double-line">
-              <md-list-item style="margin-right: auto; margin-left: auto;">
-                <md-button @click="showDialogCard = true; currentListID = list.id" class="md-icon-button"
-                           style="color: white; background-color: #d94395;">
-                  <md-icon style="color: white;">add</md-icon>
-                </md-button>
-              </md-list-item>
-            </md-list>
+                </md-list-item>
+              </md-list>
+
           </div>
-        </div>
-        <div>
-          <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
-            list
-          </md-button>
-        </div>
+        </template>
       </div>
+      <div>
+        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
+          list
+        </md-button>
+      </div>
+    </div>
     </div>
   </section>
 </template>
@@ -123,6 +166,8 @@ export default {
       listName: '',
       showDialogList: false,
       showDialogCard: false,
+      showDialogRenameList: false,
+      showDialogRenameBoard: false,
       closeOnClick: false,
       closeOnSelect: true
     }
@@ -177,7 +222,7 @@ export default {
       formdata.append("list_id", this.currentListID);
       formdata.append("board_id", this.board.id);
       formdata.append("new_card_title", cardTitle);
-      formdata.append("username", this.$store.state.user.username);
+      formdata.append("new_card_description", '');
       var requestOptions = {
         method: 'POST',
         body: formdata,
@@ -217,7 +262,86 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+    },
+
+    archiveList(currentListID) {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("board_id", this.board.id);
+      formdata.append("list_id", currentListID);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/archieve_list", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    // renameTitleOfBoard(newTitle){
+    //   // const headers = new Headers();
+    //   // headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+    //   // var formdata = new FormData();
+    //   // formdata.append("board_id", this.board.id);
+    //   //
+    //   // var requestOptions = {
+    //   //   method: 'POST',
+    //   //   headers: headers,
+    //   //   body: formdata,
+    //   //   redirect: 'follow'
+    //   // };
+    //   //
+    //   // fetch(this.$API + "/archieve_list", requestOptions)
+    //   //     .then(response => {
+    //   //       console.log(response.ok)
+    //   //       if (response.ok) {
+    //   //         this.loadContent();
+    //   //       }
+    //   //     })
+    //   //     .catch(error => console.log('error', error));
+    // },
+    renameTitleOfList(newTitle){
+
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("board_id", this.board.id);
+      formdata.append("list_id", this.currentListID);
+      formdata.append("new_title_list", newTitle);
+
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/rename_title_list", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.showDialogRenameList = false;
+            }
+          })
+          .catch(error => console.log('error', error));
+
+
+
     }
+
+
+
   }
 }
 
@@ -290,7 +414,7 @@ h3 {
   overflow: auto;
 }
 
-span{
+span {
   line-height: 30px;
 }
 
