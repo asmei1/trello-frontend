@@ -21,6 +21,7 @@
                              style="text-decoration: none; color: white; font-family: 'Segoe Print',serif">
                   <md-menu-item @click="data = 'click 1'">Home</md-menu-item>
                 </router-link>
+                <md-menu-item :to="{path: '/userEdit'}" class="md-raised">Settings</md-menu-item>
                 <md-menu-item @click="logout()" class="md-raised">Logout</md-menu-item>
               </md-menu-content>
             </md-menu>

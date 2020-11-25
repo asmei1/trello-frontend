@@ -8,6 +8,7 @@ import UserRegistration from "@/views/UserRegistration";
 import UserActivation from "@/views/UserActivation";
 import store from './store/index'
 import UserResetPassword from "@/views/UserResetPassword";
+import UserEdit from "@/views/UserEdit";
 
 Vue.use(Router)
 
@@ -44,6 +45,11 @@ const router = new Router({
             name: 'UserActivation',
             path: '/finalize/:token',
             component: UserActivation
+        },
+        {
+            name: 'UserEdit',
+            path: '/userEdit',
+            component: UserEdit
         },
         {
             name: 'UserResetPassword',

@@ -69,7 +69,6 @@ export default {
               alert("Invalid Email or Password");
             }
           })
-          .t
           .catch(error => console.log('error', error));
     }
   }
