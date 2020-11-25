@@ -18,7 +18,7 @@
         <h12 style="color: #0079BF;">Don't have an account? Register for free !</h12>
       </div>
       <div>
-        <md-button class="md-raised" style="color: white; background-color: #0079BF;">Register</md-button>
+        <md-button :to="{path: '/registration'}" class="md-raised" style="color: white; background-color: #0079BF;">Register</md-button>
       </div>
     </div>
   </section>

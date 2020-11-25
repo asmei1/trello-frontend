@@ -22,7 +22,7 @@ const store = new Vuex.Store({
         },
         [types.USER_LOGOUT](state) {
             state.user = undefined;
-            state.user = "";
+            state.token = "";
         },
         [types.USER_TOKEN](state, token) {
             state.token = token
