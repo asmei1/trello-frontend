@@ -182,6 +182,7 @@ export default {
   name: "UserBoard",
   data() {
     return {
+      newTitleOfBoard: "",
       currentCard: {},
       board: '',
       lists: [],
@@ -312,13 +313,12 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    renameTitleOfBoard(newTitle){
+    renameTitleOfBoard(newTitle) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
       formdata.append("board_id", this.board.id);
       formdata.append("new_title_board", newTitle);
-
 
       var requestOptions = {
         method: 'POST',
@@ -326,17 +326,24 @@ export default {
         body: formdata,
         redirect: 'follow'
       };
-
+      const id = this.board.id;
       fetch(this.$API + "/rename_title_board", requestOptions)
-          .then(response => {
-            console.log(response.ok)
+          .then(async response => {
             if (response.ok) {
-              this.loadContent();
+              console.log("Should be changed")
               this.showDialogRenameBoard = false;
+              await this.$router.replace({
+                name: 'UserBoard',
+                params: {boardID: id, boardTitle: newTitle}
+              })
+                  .then(() => {
+                    this.board.title = newTitle;
+                    this.newTitleOfBoard = "";
+                  })
+                  .catch(error => console.log('error', error));
             }
           })
           .catch(error => console.log('error', error));
-
     },
     renameTitleOfList(newTitle){
 
