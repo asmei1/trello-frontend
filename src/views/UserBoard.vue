@@ -1,6 +1,26 @@
 <template>
   <section>
     <div class="full-control">
+      <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
+<!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
+        <md-dialog-content>
+          <md-field>
+            <md-input v-model="currentCard.title" style="font-size: 30px"></md-input>
+          </md-field>
+
+
+            <md-field>
+              <label>Description</label>
+              <md-textarea v-model="description" style="width: 600px;"></md-textarea>
+              <md-icon>description</md-icon>
+            </md-field>
+
+          <md-dialog-actions>
+            <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
+            <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
+          </md-dialog-actions>
+        </md-dialog-content>
+      </md-dialog>
 
       <md-dialog :md-active.sync="showDialogList">
         <md-dialog-title>Add new list</md-dialog-title>
@@ -16,7 +36,7 @@
         </md-dialog-actions>
       </md-dialog>
 
-      <md-dialog :md-active.sync="showDialogCard">
+      <md-dialog :md-active.sync="showDialogAddCard">
         <md-dialog-title>Add new card</md-dialog-title>
         <md-tab md-label="General">
           <md-field>
@@ -25,7 +45,7 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-primary" @click="showDialogCard = false">Cancel</md-button>
+          <md-button class="md-primary" @click="showDialogAddCard = false">Cancel</md-button>
           <md-button class="md-primary" @click="addCard(newCardTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
@@ -102,13 +122,15 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <md-card md-with-hover>
-                      <md-ripple>
-                        <md-card-header>
-                          <div class="md-title">{{ card.title }}</div>
-                        </md-card-header>
-                      </md-ripple>
-                    </md-card>
+                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card">
+                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
+                        <md-ripple>
+                          <md-card-header>
+                            <div class="md-title">{{ card.title }}</div>
+                          </md-card-header>
+                        </md-ripple>
+                      </md-card>
+                    </div>
                   </template>
                   <!--                <md-list class="md-double-line">-->
                   <!--                  <md-list-item>-->
@@ -135,7 +157,7 @@
               </md-content>
               <md-list class="md-double-line">
                 <md-list-item style="margin-right: auto; margin-left: auto;">
-                  <md-button @click="showDialogCard = true; currentListID = list.id" class="md-icon-button"
+                  <md-button @click="showDialogAddCard = true; currentListID = list.id" class="md-icon-button"
                              style="color: white; background-color: #d94395;">
                     <md-icon style="color: white;">add</md-icon>
                   </md-button>
@@ -160,16 +182,19 @@ export default {
   name: "UserBoard",
   data() {
     return {
+      currentCard: {},
       board: '',
       lists: [],
       cardName: '',
       listName: '',
       showDialogList: false,
-      showDialogCard: false,
+      showDialogAddCard: false,
       showDialogRenameList: false,
       showDialogRenameBoard: false,
+      showDialogEditCard: false,
       closeOnClick: false,
-      closeOnSelect: true
+      closeOnSelect: true,
+      description: null
     }
   },
   created: async function () {
@@ -213,7 +238,7 @@ export default {
     },
 
     addCard(cardTitle) {
-      this.showDialogCard = false;
+      this.showDialogAddCard = false;
 
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -287,28 +312,32 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    // renameTitleOfBoard(newTitle){
-    //   // const headers = new Headers();
-    //   // headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-    //   // var formdata = new FormData();
-    //   // formdata.append("board_id", this.board.id);
-    //   //
-    //   // var requestOptions = {
-    //   //   method: 'POST',
-    //   //   headers: headers,
-    //   //   body: formdata,
-    //   //   redirect: 'follow'
-    //   // };
-    //   //
-    //   // fetch(this.$API + "/archieve_list", requestOptions)
-    //   //     .then(response => {
-    //   //       console.log(response.ok)
-    //   //       if (response.ok) {
-    //   //         this.loadContent();
-    //   //       }
-    //   //     })
-    //   //     .catch(error => console.log('error', error));
-    // },
+    renameTitleOfBoard(newTitle){
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("board_id", this.board.id);
+      formdata.append("new_title_board", newTitle);
+
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/rename_title_board", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.showDialogRenameBoard = false;
+            }
+          })
+          .catch(error => console.log('error', error));
+
+    },
     renameTitleOfList(newTitle){
 
       const headers = new Headers();
@@ -351,7 +380,7 @@ export default {
 
 section {
   height: 100vh;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/userBoardBackground.jpg');
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/boardDefaultBackground.jpg');
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -416,6 +445,10 @@ h3 {
 
 span {
   line-height: 30px;
+}
+
+.md-dialog-content {
+  max-width: 800px;
 }
 
 </style>
