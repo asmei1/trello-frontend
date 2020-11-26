@@ -20,12 +20,7 @@
             <md-button class="md-primary" @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close</md-button>
               <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Archive</md-button>
               <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Remove</md-button>
-
-
-            <md-dialog-actions>
-              <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
-              <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
-            </md-dialog-actions>
+          </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
 
@@ -151,7 +146,7 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card">
+                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; newEditCardDescription = card.description; newEditCardTitle = card.title">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
