@@ -5,19 +5,19 @@
 <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
         <md-dialog-content>
           <md-field>
-            <md-input v-model="currentCard.title" style="font-size: 30px"></md-input>
+            <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
           </md-field>
 
 
             <md-field>
               <label>Description</label>
-              <md-textarea v-model="description" style="width: 600px;"></md-textarea>
+              <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
               <md-icon>description</md-icon>
             </md-field>
 
           <md-dialog-actions>
-            <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
-            <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
+<!--            <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>-->
+            <md-button class="md-primary" @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close</md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -122,7 +122,7 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card">
+                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
@@ -371,9 +371,37 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+    }
+    ,
+    updateCardProperties(newCardTitle, newCardDescription){
+
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("card_id", this.currentCard.id);
+      formdata.append("list_id", this.currentListID);
+      formdata.append("new_title_card", newCardTitle);
+      formdata.append("new_description_card", newCardDescription);
 
 
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
 
+      fetch(this.$API + "/update_card_properties", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.showDialogEditCard = false;
+              this.currentCard.title = newCardTitle;
+              this.currentCard.description = newCardDescription;
+            }
+          })
+          .catch(error => console.log('error', error));
     }
 
 
