@@ -20,7 +20,8 @@
       <md-content class="md-scrollbar" style="width: 800px; height: 100px; background-color: transparent;">
         <div v-for="(board) in nonArchivedBoards" v-bind:key="board.id">
           <router-link :to="{name: 'UserBoard', params: { boardID: board.id, boardTitle: board.title }}">
-            <md-button class="md-raised">{{ board.title }}</md-button>
+
+            <md-button class="md-raised " :style="{ backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft'}">{{ board.title }}</md-button>
           </router-link>
         </div>
         <md-button @click="showDialog = true"  class="md-fab md-primary" style="color: black; background-color: #d94395; margin: 30px">

@@ -1,23 +1,50 @@
 <template>
-  <section>
+  <section :style="{ backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft'}">
     <div class="full-control">
       <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
 <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
         <md-dialog-content>
-          <md-field>
-            <md-input v-model="currentCard.title" style="font-size: 30px"></md-input>
-          </md-field>
+
+              <md-field>
+                <md-input v-model="currentCard.title" style="font-size: 30px"></md-input>
+              </md-field>
 
 
+              <md-field>
+                <label>Description</label>
+                <md-textarea v-model="description" style="width: 600px;"></md-textarea>
+                <md-icon>description</md-icon>
+              </md-field>
+
+              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Archive</md-button>
+              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Remove</md-button>
+
+
+            <md-dialog-actions>
+              <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
+              <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
+            </md-dialog-actions>
+        </md-dialog-content>
+      </md-dialog>
+
+      <md-dialog :md-active.sync="showDialogBackgroundEdit">
+        <md-dialog-content>
+          <md-dialog-title>Change background</md-dialog-title>
+          <md-tab md-label="General">
             <md-field>
-              <label>Description</label>
-              <md-textarea v-model="description" style="width: 600px;"></md-textarea>
-              <md-icon>description</md-icon>
+              <label>Only images</label>
+              <md-file v-model="single" accept="image/*" @change="previewFile()"/>
             </md-field>
-
+            <img src="newBackground64" height="200px" width="300px" alt="Image preview...">
+            <template v-if="newBackground64 != null">
+              <div class="image">
+                <img :src="newBackground64">
+              </div>
+            </template>
+  <!--          <img :src="newBackground" class="image">-->
+          </md-tab>
           <md-dialog-actions>
-            <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
-            <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
+            <md-button class="md-primary" @click="saveNewBackground()">OK</md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -90,7 +117,7 @@
             </md-button>
             <md-menu-content>
               <md-menu-item @click="showDialogRenameBoard = true;">Edit title</md-menu-item>
-              <md-menu-item>Edit background</md-menu-item>
+              <md-menu-item @click="showDialogBackgroundEdit = true;">Edit background</md-menu-item>
               <md-menu-item>Archived items</md-menu-item>
               <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
             </md-menu-content>
@@ -128,30 +155,13 @@
                           <md-card-header>
                             <div class="md-title">{{ card.title }}</div>
                           </md-card-header>
+<!--                          <md-button class="md-icon-button">-->
+<!--                            <md-icon>favorite</md-icon>-->
+<!--                          </md-button>-->
                         </md-ripple>
                       </md-card>
                     </div>
                   </template>
-                  <!--                <md-list class="md-double-line">-->
-                  <!--                  <md-list-item>-->
-                  <!--                    <div class="md-list-item-text">-->
-                  <!--                      <span>{{ card.title }}</span>-->
-                  <!--                    </div>-->
-                  <!--                    &lt;!&ndash;                <div class="separator md-toolbar-section-end">&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                  <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                    <md-button md-menu-trigger  class="md-icon-button" style="background: transparent">&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                      <md-icon style="color: black;">more_vert</md-icon>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                    </md-button>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                    <md-menu-content>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                      <md-menu-item>Edit title</md-menu-item>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                      <md-menu-item>Edit background</md-menu-item>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                      <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                    </md-menu-content>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                  </md-menu>&ndash;&gt;-->
-                  <!--                    &lt;!&ndash;                </div>&ndash;&gt;-->
-                  <!--                  </md-list-item>-->
-                  <!--                  <md-divider></md-divider>-->
-                  <!--                </md-list>-->
                 </div>
 
               </md-content>
@@ -178,6 +188,7 @@
 </template>
 
 <script>
+
 export default {
   name: "UserBoard",
   data() {
@@ -185,6 +196,7 @@ export default {
       newTitleOfBoard: "",
       currentCard: {},
       board: '',
+      newBackground64: '',
       lists: [],
       cardName: '',
       listName: '',
@@ -193,9 +205,11 @@ export default {
       showDialogRenameList: false,
       showDialogRenameBoard: false,
       showDialogEditCard: false,
+      showDialogBackgroundEdit: false,
       closeOnClick: false,
       closeOnSelect: true,
-      description: null
+      description: null,
+      files: null
     }
   },
   created: async function () {
@@ -206,13 +220,16 @@ export default {
     loadContent: async function () {
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-      await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
-          .then(response => response.json())
-          .then(result => {
-            this.lists = result
-            console.log(this.lists)
-          })
-          .catch(error => console.log('error', error));
+      let response =  await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
+      let data = await response.json()
+      this.board.background = data.board_properties.background;
+      this.lists = data.lists;
+
+      // this.newBackground64 = this.board.background;
+      console.log("RESULT" + data)
+
+      // console.log("lists" + this.lists)
+      console.log("board_properties " +  this.newBackground64 )
     },
     addList(newListName) {
       const headers = new Headers();
@@ -374,6 +391,60 @@ export default {
 
 
 
+    },
+    saveNewBackground(){
+        this.showDialogBackgroundEdit = false;
+    },
+    previewFile() {
+      const preview = document.querySelector('img');
+      const file = document.querySelector('input[type=file]').files[0];
+      const reader = new FileReader();
+      let vm = this;
+
+      reader.onload = function (){
+        preview.src = reader.result;
+        console.log("RESULT: " + reader.result)
+        this.background = reader.result;
+        console.log("PREVIEW11111: " + this.background )
+        const headers = new Headers();
+        headers.append("Authorization", 'Bearer ' + vm.$store.state.token);
+        var formdata = new FormData();
+        formdata.append("board_id", vm.board.id);
+        formdata.append("image", this.background);
+
+
+        var requestOptions = {
+          method: 'POST',
+          headers: headers,
+          body: formdata,
+          redirect: 'follow'
+        };
+
+        fetch(vm.$API + "/set_background_board", requestOptions)
+            .then(response => {
+              console.log(response.ok)
+              vm.loadContent();
+            })
+            .catch(error => console.log('error', error));
+      }
+
+
+
+      reader.addEventListener("load", function () {
+        // convert image file to base64 string
+        preview.src = reader.result;
+        console.log("RESULT: " + reader.result)
+        this.background = reader.result;
+
+      })
+
+
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+
+
     }
 
 
@@ -387,11 +458,6 @@ export default {
 
 section {
   height: 100vh;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('../assets/boardDefaultBackground.jpg');
-  background-position: top left;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
   font-family: "Segoe Print", serif;
 
 }
@@ -456,6 +522,12 @@ span {
 
 .md-dialog-content {
   max-width: 800px;
+}
+
+.image {
+  float: right;
+  margin-right: 300px;
+  padding-top: 75px;
 }
 
 </style>
