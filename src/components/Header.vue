@@ -79,7 +79,7 @@ export default {
       }
     },
     checkIfTokenIsStillActiveWorker: function () {
-      this.background_token_checking = setInterval(this.checkIfTokenIsStillActive, 5000);
+      this.background_token_checking = setInterval(this.checkIfTokenIsStillActive, 900000);
     },
     logout: async function () {
       const headers = new Headers();
