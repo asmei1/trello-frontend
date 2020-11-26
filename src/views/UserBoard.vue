@@ -18,6 +18,35 @@
           <md-dialog-actions>
 <!--            <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>-->
             <md-button class="md-primary" @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close</md-button>
+              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Archive</md-button>
+              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Remove</md-button>
+
+
+            <md-dialog-actions>
+              <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
+              <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
+            </md-dialog-actions>
+        </md-dialog-content>
+      </md-dialog>
+
+      <md-dialog :md-active.sync="showDialogBackgroundEdit">
+        <md-dialog-content>
+          <md-dialog-title>Change background</md-dialog-title>
+          <md-tab md-label="General">
+            <md-field>
+              <label>Only images</label>
+              <md-file v-model="single" accept="image/*" @change="previewFile()"/>
+            </md-field>
+            <img src="newBackground64" height="200px" width="300px" alt="Image preview...">
+            <template v-if="newBackground64 != null">
+              <div class="image">
+                <img :src="newBackground64">
+              </div>
+            </template>
+  <!--          <img :src="newBackground" class="image">-->
+          </md-tab>
+          <md-dialog-actions>
+            <md-button class="md-primary" @click="saveNewBackground()">OK</md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -122,7 +151,7 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
+                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
@@ -195,7 +224,8 @@ export default {
       showDialogEditCard: false,
       closeOnClick: false,
       closeOnSelect: true,
-      description: null
+      description: null,
+      files: null
     }
   },
   created: async function () {
@@ -206,13 +236,16 @@ export default {
     loadContent: async function () {
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-      await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
-          .then(response => response.json())
-          .then(result => {
-            this.lists = result
-            console.log(this.lists)
-          })
-          .catch(error => console.log('error', error));
+      let response =  await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
+      let data = await response.json()
+      this.board.background = data.board_properties.background;
+      this.lists = data.lists;
+
+      // this.newBackground64 = this.board.background;
+      console.log("RESULT" + data)
+
+      // console.log("lists" + this.lists)
+      console.log("board_properties " +  this.newBackground64 )
     },
     addList(newListName) {
       const headers = new Headers();
@@ -402,6 +435,63 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+
+
+
+    },
+    saveNewBackground(){
+        this.showDialogBackgroundEdit = false;
+    },
+    previewFile() {
+      const preview = document.querySelector('img');
+      const file = document.querySelector('input[type=file]').files[0];
+      const reader = new FileReader();
+      let vm = this;
+
+      reader.onload = function (){
+        preview.src = reader.result;
+        console.log("RESULT: " + reader.result)
+        this.background = reader.result;
+        console.log("PREVIEW11111: " + this.background )
+        const headers = new Headers();
+        headers.append("Authorization", 'Bearer ' + vm.$store.state.token);
+        var formdata = new FormData();
+        formdata.append("board_id", vm.board.id);
+        formdata.append("image", this.background);
+
+
+        var requestOptions = {
+          method: 'POST',
+          headers: headers,
+          body: formdata,
+          redirect: 'follow'
+        };
+
+        fetch(vm.$API + "/set_background_board", requestOptions)
+            .then(response => {
+              console.log(response.ok)
+              vm.loadContent();
+            })
+            .catch(error => console.log('error', error));
+      }
+
+
+
+      reader.addEventListener("load", function () {
+        // convert image file to base64 string
+        preview.src = reader.result;
+        console.log("RESULT: " + reader.result)
+        this.background = reader.result;
+
+      })
+
+
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+
+
     }
 
 
