@@ -1,28 +1,24 @@
 <template>
-  <section :style="{ backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft'}">
+  <section :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
     <div class="full-control">
       <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
 <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
         <md-dialog-content>
+          <md-field>
+          <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
+          </md-field>
 
-              <md-field>
-                <md-input v-model="currentCard.title" style="font-size: 30px"></md-input>
-              </md-field>
+            <md-field>
+              <label>Description</label>
+              <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
+              <md-icon>description</md-icon>
+            </md-field>
 
-
-              <md-field>
-                <label>Description</label>
-                <md-textarea v-model="description" style="width: 600px;"></md-textarea>
-                <md-icon>description</md-icon>
-              </md-field>
-
-              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Archive</md-button>
-              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;">Remove</md-button>
-
+            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">Archive</md-button>
+            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove</md-button>
 
             <md-dialog-actions>
-              <md-button class="md-primary" @click="showDialogEditCard = false">Close</md-button>
-              <md-button class="md-primary" @click="showDialogEditCard = false">Save</md-button>
+              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close</md-button>
             </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -44,7 +40,7 @@
   <!--          <img :src="newBackground" class="image">-->
           </md-tab>
           <md-dialog-actions>
-            <md-button class="md-primary" @click="saveNewBackground()">OK</md-button>
+            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="saveNewBackground()">OK</md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -58,8 +54,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-primary" @click="showDialogList = false">Cancel</md-button>
-          <md-button class="md-primary" @click="addList(newListTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogList = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addList(newListTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -72,8 +68,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-primary" @click="showDialogAddCard = false">Cancel</md-button>
-          <md-button class="md-primary" @click="addCard(newCardTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogAddCard = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addCard(newCardTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -86,8 +82,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-primary" @click="showDialogRenameList = false">Cancel</md-button>
-          <md-button class="md-primary" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameList = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -100,8 +96,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-primary" @click="showDialogRenameBoard = false">Cancel</md-button>
-          <md-button class="md-primary" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameBoard = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -141,6 +137,7 @@
                       <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title</md-menu-item>
                       <md-menu-item>Move list</md-menu-item>
                       <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
+                      <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
                     </md-menu-content>
                   </md-menu>
                 </div>
@@ -149,8 +146,7 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card">
-                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
+                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
                             <div class="md-title">{{ card.title }}</div>
@@ -228,7 +224,7 @@ export default {
       // this.newBackground64 = this.board.background;
       console.log("RESULT" + data)
 
-      // console.log("lists" + this.lists)
+      console.log("lists" + this.lists)
       console.log("board_properties " +  this.newBackground64 )
     },
     addList(newListName) {
@@ -326,6 +322,79 @@ export default {
             console.log(response.ok)
             if (response.ok) {
               this.loadContent();
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    removeList(currentListID) {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("board_id", this.board.id);
+      formdata.append("list_id", currentListID);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/remove_list", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    archiveCard() {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("list_id", this.currentListID);
+      formdata.append("card_id", this.currentCard.id);
+
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/archieve_card", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.showDialogEditCard = false;
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    removeCard() {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("list_id", this.currentListID);
+      formdata.append("card_id", this.currentCard.id);
+
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/remove_card", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.showDialogEditCard = false;
             }
           })
           .catch(error => console.log('error', error));
@@ -445,6 +514,32 @@ export default {
       }
 
 
+    },
+    updateCardProperties(newCardTitle, newCardDescription){
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("card_id", this.currentCard.id);
+      formdata.append("list_id", this.currentListID);
+      formdata.append("new_title_card", newCardTitle);
+      formdata.append("new_description_card", newCardDescription);
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+      fetch(this.$API + "/update_card_properties", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.showDialogEditCard = false;
+              this.currentCard.title = newCardTitle;
+              this.currentCard.description = newCardDescription;
+            }
+          })
+          .catch(error => console.log('error', error));
     }
 
 
@@ -454,14 +549,19 @@ export default {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
-section {
+
+section{
   height: 100vh;
-  font-family: "Segoe Print", serif;
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+  background-position: top left;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  font-family: "Segoe Print",serif;
 
 }
-
 
 .full-control {
   display: flex;
