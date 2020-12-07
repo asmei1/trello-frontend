@@ -122,7 +122,17 @@
       </md-toolbar>
 
       <div class="wrapp">
-
+        <draggable
+            :list="lists"
+            :animation="200"
+            ghost-class="moving-card"
+            group="lists"
+            filter=".action-button"
+            class="w-full max-w-xs"
+            tag="elevation"
+            style="display: flex;
+              flex-wrap: wrap;"
+        >
         <div v-for="(list) in lists" v-bind:key="list.id">
           <template v-if="!list.is_archieve">
             <div class="viewport">
@@ -144,8 +154,18 @@
               </md-toolbar>
 
               <md-content class="md-scrollbar">
+                <draggable
+                  :list="list.cards"
+                  :animation="200"
+                  ghost-class="moving-card"
+                  group="list.cards"
+                  filter=".action-button"
+                  class="w-full max-w-xs"
+                  tag="ul"
+              >
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
+
                     <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
@@ -159,7 +179,7 @@
                     </div>
                   </template>
                 </div>
-
+                </draggable>
               </md-content>
               <md-list class="md-double-line">
                 <md-list-item style="margin-right: auto; margin-left: auto;">
@@ -178,14 +198,18 @@
           list
         </md-button>
       </div>
+        </draggable>
     </div>
     </div>
   </section>
 </template>
 
 <script>
-
+import draggable from 'vuedraggable';
 export default {
+  components: {
+    draggable
+  },
   name: "UserBoard",
   data() {
     return {
@@ -630,4 +654,12 @@ span {
   padding-top: 75px;
 }
 
+.moving-card {
+  opacity: 0.5;
+  background: #f7fafc;
+}
+
+ul{
+  padding: 0px;
+}
 </style>

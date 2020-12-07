@@ -10,6 +10,7 @@ import store from './store/index'
 import UserResetPassword from "@/views/UserResetPassword";
 import UserEdit from "@/views/UserEdit";
 
+
 Vue.use(Router)
 
 const router = new Router({
