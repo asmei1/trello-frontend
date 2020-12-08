@@ -96,11 +96,11 @@ export default {
   },
   mounted() {
     this.user = this.$store.state.user;
-    // this.checkIfTokenIsStillActive();
-    // this.checkIfTokenIsStillActiveWorker();
+    this.checkIfTokenIsStillActive();
+    //this.checkIfTokenIsStillActiveWorker();
   },
   beforeDestroy() {
-    // clearInterval(this.background_token_checking)
+    //clearInterval(this.background_token_checking)
   },
   watch: {
     // eslint-disable-next-line no-unused-vars

@@ -13,10 +13,10 @@
               <template v-if="this.isCurrentCardHasTerm()">
                 <span>
                 <md-chips v-model="terms"
-                         @md-click="openDatetime"
-                         @md-delete="deleteCurrentCardTerm"
+                          @md-click="openDatetime"
+                          @md-delete="deleteCurrentCardTerm"
                           md-limit=1
-                         @click="deleteCurrentCardTerm">
+                          @click="deleteCurrentCardTerm">
                 </md-chips>
 
 
@@ -50,24 +50,50 @@
                     v-on:close="editCardTerm"
                     auto
           ></datetime>
+
+
           <md-field>
             <label>Description</label>
             <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
             <md-icon>description</md-icon>
           </md-field>
 
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">
-            Archive
+          <md-field>
+            <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
+          </md-field>
+          <div style="padding-top: -10px; text-align: right">
+            <md-button class="" style="width: 70px; font-size: 12px; background-color: #0079BF; color: white;"
+                       @click="sendComment(newCommentContent)">Send
+            </md-button>
+          </div>
+          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the comments below
           </md-button>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove
+          <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
+            Show the comments below
           </md-button>
+          <div style="min-width: 100%">
+            <md-content v-if="showCommentsInCard" class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+              <div v-for="(comment) in activeCardComments" v-bind:key="comment.id"
+                   style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
+                <div>
+                  <span class="md-alignment-left"
+                        style="font-size: 10px; display: inline-block; width: 50%">{{ comment.author.username }}</span>
+                  <span class="md-alignment-right"
+                        style="font-size: 10px; padding-right: 5px;text-align: right; display: inline-block; width: 50%">{{
+                      formatDate(comment.created_date)
+                    }}</span>
+                </div>
+                <div>{{ comment.content }}</div>
+              </div>
 
+              <br>
+            </md-content>
+          </div>
           <md-dialog-actions>
             <md-button class="md-raised" :md-ripple="false"
                        style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                       @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close
+                       @click="newCommentContent = ''; updateCardProperties(newEditCardTitle, newEditCardDescription)">
+              Close
             </md-button>
           </md-dialog-actions>
         </md-dialog-content>
@@ -225,7 +251,7 @@
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
                     <div class="elevation-demo"
-                         @click="showDialogEditCard = true; currentCard = card; terms = [card.term]; cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
+                         @click="showDialogEditCard = true; currentCard = card;terms = [formatDate(card.term)]; cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
@@ -265,14 +291,10 @@
 </template>
 
 <script>
-import 'vue-datetime/dist/vue-datetime.css'
-import {Datetime} from 'vue-datetime';
+import Moment from "moment-js";
 
 export default {
   name: "UserBoard",
-  components: {
-    Datetime
-  },
   data() {
     return {
       newTitleOfBoard: "",
@@ -295,7 +317,11 @@ export default {
       cardTerm: "",
       terms: [],
       cardWithTerm: false,
-      cardTermCompletion: false
+      cardTermCompletion: false,
+      showCommentsInCard: false,
+      newCommentContent: "",
+      newListTitle: false,
+      activeCardComments: []
     }
   },
   created: async function () {
@@ -324,7 +350,7 @@ export default {
             if (response.ok) {
               console.log("OK!");
               this.currentCard.term = this.cardTerm;
-              this.terms = [this.cardTerm]
+              this.terms = [this.formatDate(this.cardTerm)]
             }
           })
           .catch(error => console.log('error', error));
@@ -388,12 +414,24 @@ export default {
       let data = await response.json()
       this.board.background = data.board_properties.background;
       this.lists = data.lists;
-      console.log(this.lists[0])
+
       // this.newBackground64 = this.board.background;
       console.log("RESULT" + data)
 
       console.log("lists" + this.lists)
       console.log("board_properties " + this.newBackground64)
+    },
+    loadCommentsForCurrentCard: async function () {
+      console.log("Zaczał ładować " + this.currentCard.id)
+
+      this.activeCardComments = [];
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      let response = await fetch(this.$API + "/card/" + this.currentCard.id + "/get_comments", {headers: headers})
+      let data = await response.json()
+      this.activeCardComments = data;
+
+      console.log(this.activeCardComments)
     },
     addList(newListName) {
       const headers = new Headers();
@@ -634,6 +672,30 @@ export default {
     saveNewBackground() {
       this.showDialogBackgroundEdit = false;
     },
+
+    sendComment(commentContent) {
+      this.newCommentContent = '';
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("content", commentContent);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/add_comment", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              await this.loadCommentsForCurrentCard();
+            }
+          })
+          .catch(error => console.log('error', error));
+
+    },
     previewFile() {
       const preview = document.querySelector('img');
       const file = document.querySelector('input[type=file]').files[0];
@@ -708,6 +770,9 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+    },
+    formatDate(date) {
+      return Moment(date).format('DD.MM.YYYY h:mm:ss');
     }
 
 
@@ -796,4 +861,5 @@ span {
   margin-right: 300px;
   padding-top: 75px;
 }
+
 </style>
