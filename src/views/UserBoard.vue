@@ -8,31 +8,48 @@
           <md-field>
             <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
           </md-field>
+          <div class="md-layout">
+            <div class="md-layout-item">
+              <template v-if="this.isCurrentCardHasTerm()">
+                <span>
+                <md-chips v-model="terms"
+                         @md-click="openDatePickerOnClick"
+                         @md-delete="deleteCurrentCardTerm"
+                          md-limit=1
+                         @click="deleteCurrentCardTerm">
+                </md-chips>
 
-          <template v-if="this.isCurrentCardHasTerm()">
-            <md-chip>{{ this.currentCard.term }}</md-chip>
-          </template>
-          <template v-else>
-            <div class="datetime-input-container md-toolbar-section-end" style="width: 100%">
-              <datetime hidden
-                        ref="datetime"
-                        type="datetime"
-                        v-model="cardTerm"
-                        :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
-                        :phrases="{ok: 'Continue', cancel: 'Exit'}"
-                        :hour-step="2"
-                        :minute-step="15"
-                        :week-start="7"
-                        v-on:close="editCardTerm"
-                        auto
-              ></datetime>
 
-              <md-button @click="openDatetime">
-                Add term
+                </span>
+                <md-checkbox class="completion_checkbox" style="margin-top: 5px;" v-model="cardTermCompletion"
+                             @click="setCardTermCompletion">
+                  Realized
+                </md-checkbox>
+
+              </template>
+            </div>
+            <div class="md-layout-item"/>
+            <div class="md-layout-item"/>
+            <div class="md-layout-item" style="alignment: right">
+              <md-button class="md-alignment-top-right" style="alignment: right" @click="openDatetime">
+                <template v-if="!this.isCurrentCardHasTerm()">
+                  Add term
+                </template>
               </md-button>
             </div>
-          </template>
-
+          </div>
+          <datetime hidden
+                    ref="datetime"
+                    type="datetime"
+                    v-model="cardTerm"
+                    :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
+                    :phrases="{ok: 'Continue', cancel: 'Exit'}"
+                    :hour-step="2"
+                    :minute-step="15"
+                    :week-start="7"
+                    v-on:close="editCardTerm"
+                    auto
+          ></datetime>
           <md-field>
             <label>Description</label>
             <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
@@ -208,7 +225,7 @@
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
                     <div class="elevation-demo"
-                         @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
+                         @click="showDialogEditCard = true; currentCard = card; terms = [card.term]; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
@@ -276,6 +293,7 @@ export default {
       description: null,
       files: null,
       cardTerm: "",
+      terms: [],
       cardWithTerm: false,
       cardTermCompletion: false
     }
@@ -285,14 +303,16 @@ export default {
     this.loadContent();
   },
   methods: {
+    // eslint-disable-next-line no-unused-vars
+    openDatePickerOnClick(t, i){
+      this.openDatetime();
+    },
     editCardTerm: async function () {
       if (!this.cardTerm) return;
 
-      console.log(this.cardTerm);
       this.cardWithTerm = true;
       var formdata = new FormData();
       formdata.append("term", this.cardTerm);
-      formdata.append("term_completion", this.cardTermCompletion);
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
 
@@ -308,6 +328,53 @@ export default {
             if (response.ok) {
               console.log("OK!");
               this.currentCard.term = this.cardTerm;
+              this.terms = [this.cardTerm]
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    // eslint-disable-next-line no-unused-vars
+    deleteCurrentCardTerm: async function (t, i) {
+      this.cardWithTerm = true;
+      var formdata = new FormData();
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      var requestOptions = {
+        method: 'DELETE',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/delete_term", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              console.log("OK!");
+              this.currentCard.term = null;
+              this.currentCard.term_completion = null;
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    setCardTermCompletion() {
+      this.cardWithTerm = true;
+      var formdata = new FormData();
+      formdata.append("term_completion", this.cardTermCompletion);
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/edit_term", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              console.log("OK!");
               this.currentCard.term_completion = this.cardTermCompletion;
             }
           })
@@ -736,5 +803,4 @@ span {
   margin-right: 300px;
   padding-top: 75px;
 }
-
 </style>
