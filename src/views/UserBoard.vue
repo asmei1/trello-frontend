@@ -8,23 +8,31 @@
           <md-field>
             <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
           </md-field>
-          <div class="datetime-input-container">
 
-            <md-button @click="openDatetime">
-              Add term
-            </md-button>
-            <datetime hidden
-                      ref="datetime"
-                      type="datetime"
-                      v-model="cardTerm"
-                      :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
-                      :phrases="{ok: 'Continue', cancel: 'Exit'}"
-                      :hour-step="2"
-                      :minute-step="15"
-                      :week-start="7"
-                      auto
-            ></datetime>
-          </div>
+          <template v-if="this.isCurrentCardHasTerm()">
+            <md-chip>{{ this.currentCard.term }}</md-chip>
+          </template>
+          <template v-else>
+            <div class="datetime-input-container md-toolbar-section-end" style="width: 100%">
+              <datetime hidden
+                        ref="datetime"
+                        type="datetime"
+                        v-model="cardTerm"
+                        :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
+                        :phrases="{ok: 'Continue', cancel: 'Exit'}"
+                        :hour-step="2"
+                        :minute-step="15"
+                        :week-start="7"
+                        v-on:close="editCardTerm"
+                        auto
+              ></datetime>
+
+              <md-button @click="openDatetime">
+                Add term
+              </md-button>
+            </div>
+          </template>
+
           <md-field>
             <label>Description</label>
             <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
@@ -267,8 +275,9 @@ export default {
       closeOnSelect: true,
       description: null,
       files: null,
-      cardTerm: ""
-
+      cardTerm: "",
+      cardWithTerm: false,
+      cardTermCompletion: false
     }
   },
   created: async function () {
@@ -276,6 +285,42 @@ export default {
     this.loadContent();
   },
   methods: {
+    editCardTerm: async function () {
+      if (!this.cardTerm) return;
+
+      console.log(this.cardTerm);
+      this.cardWithTerm = true;
+      var formdata = new FormData();
+      formdata.append("term", this.cardTerm);
+      formdata.append("term_completion", this.cardTermCompletion);
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/edit_term", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              console.log("OK!");
+              this.currentCard.term = this.cardTerm;
+              this.currentCard.term_completion = this.cardTermCompletion;
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    isCurrentCardHasTerm() {
+      if (this.currentCard) {
+        if (this.currentCard.term) {
+          return true;
+        }
+      }
+      return false;
+    },
     loadContent: async function () {
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -283,7 +328,7 @@ export default {
       let data = await response.json()
       this.board.background = data.board_properties.background;
       this.lists = data.lists;
-
+      console.log(this.lists[0])
       // this.newBackground64 = this.board.background;
       console.log("RESULT" + data)
 
