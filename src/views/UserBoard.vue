@@ -1,25 +1,62 @@
 <template>
-  <section :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
+  <section
+      :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
     <div class="full-control">
       <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
-<!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
+        <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
         <md-dialog-content>
           <md-field>
-          <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
+            <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
           </md-field>
 
-            <md-field>
-              <label>Description</label>
-              <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
-              <md-icon>description</md-icon>
-            </md-field>
+          <md-field>
+            <label>Description</label>
+            <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
+            <md-icon>description</md-icon>
+          </md-field>
 
-            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">Archive</md-button>
-            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">
+            Archive
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove
+          </md-button>
 
-            <md-dialog-actions>
-              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close</md-button>
-            </md-dialog-actions>
+          <md-dialog-actions>
+            <md-button class="md-raised" :md-ripple="false"
+                       style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                       @click="newCommentContent = ''; updateCardProperties(newEditCardTitle, newEditCardDescription)">
+              Close
+            </md-button>
+          </md-dialog-actions>
+
+          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the comments below
+          </md-button>
+          <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
+            Show the comments below
+          </md-button>
+          <div style="min-width: 100%">
+            <md-content v-if="showCommentsInCard" class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+              <md-field>
+                <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
+              </md-field>
+              <div style="padding-top: -10px; text-align: right">
+                <md-button class="" style="width: 70px; font-size: 12px; background-color: #0079BF; color: white;"
+                           @click="sendComment(newCommentContent)">Send
+                </md-button>
+              </div>
+              <div v-for="(comment) in activeCardComments" v-bind:key="comment.id" style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
+                  <div>
+                    <span class="md-alignment-left" style="font-size: 10px; display: inline-block; width: 50%">{{ comment.author.username }}</span>
+                    <span class="md-alignment-right" style="font-size: 10px; padding-right: 5px;text-align: right; display: inline-block; width: 50%">{{ formatDate(comment.created_date) }}</span>
+                  </div>
+                  <div>{{ comment.content }}</div>
+              </div>
+
+              <br>
+            </md-content>
+          </div>
         </md-dialog-content>
       </md-dialog>
 
@@ -37,10 +74,13 @@
                 <img :src="newBackground64">
               </div>
             </template>
-  <!--          <img :src="newBackground" class="image">-->
+            <!--          <img :src="newBackground" class="image">-->
           </md-tab>
           <md-dialog-actions>
-            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="saveNewBackground()">OK</md-button>
+            <md-button class="md-raised" :md-ripple="false"
+                       style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                       @click="saveNewBackground()">OK
+            </md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -54,8 +94,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogList = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addList(newListTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogList = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="addList(newListTitle)">Add
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -68,8 +114,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogAddCard = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addCard(newCardTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogAddCard = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="addCard(newCardTitle)">Add
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -82,8 +134,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameList = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogRenameList = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="renameTitleOfList(newTitleOfList)">Save
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -96,8 +154,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameBoard = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogRenameBoard = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="renameTitleOfBoard(newTitleOfBoard)">Save
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -134,7 +198,8 @@
                       <md-icon style="color: black;">more_vert</md-icon>
                     </md-button>
                     <md-menu-content>
-                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title</md-menu-item>
+                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title
+                      </md-menu-item>
                       <md-menu-item>Move list</md-menu-item>
                       <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
                       <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
@@ -146,14 +211,16 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
+                    <div class="elevation-demo"
+                         @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description; loadCommentsForCurrentCard()">
+                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
                             <div class="md-title">{{ card.title }}</div>
                           </md-card-header>
-<!--                          <md-button class="md-icon-button">-->
-<!--                            <md-icon>favorite</md-icon>-->
-<!--                          </md-button>-->
+                          <!--                          <md-button class="md-icon-button">-->
+                          <!--                            <md-icon>favorite</md-icon>-->
+                          <!--                          </md-button>-->
                         </md-ripple>
                       </md-card>
                     </div>
@@ -170,20 +237,22 @@
                 </md-list-item>
               </md-list>
 
-          </div>
-        </template>
+            </div>
+          </template>
+        </div>
+        <div>
+          <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">
+            Add
+            list
+          </md-button>
+        </div>
       </div>
-      <div>
-        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
-          list
-        </md-button>
-      </div>
-    </div>
     </div>
   </section>
 </template>
 
 <script>
+import Moment from "moment-js";
 
 export default {
   name: "UserBoard",
@@ -205,7 +274,11 @@ export default {
       closeOnClick: false,
       closeOnSelect: true,
       description: null,
-      files: null
+      files: null,
+      showCommentsInCard: false,
+      newCommentContent: "",
+      newListTitle: false,
+      activeCardComments: []
     }
   },
   created: async function () {
@@ -216,7 +289,7 @@ export default {
     loadContent: async function () {
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-      let response =  await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
+      let response = await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
       let data = await response.json()
       this.board.background = data.board_properties.background;
       this.lists = data.lists;
@@ -225,7 +298,19 @@ export default {
       console.log("RESULT" + data)
 
       console.log("lists" + this.lists)
-      console.log("board_properties " +  this.newBackground64 )
+      console.log("board_properties " + this.newBackground64)
+    },
+    loadCommentsForCurrentCard: async function () {
+      console.log("Zaczał ładować " + this.currentCard.id)
+
+      this.activeCardComments = [];
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      let response = await fetch(this.$API + "/card/" + this.currentCard.id + "/get_comments", {headers: headers})
+      let data = await response.json()
+      this.activeCardComments = data;
+
+      console.log(this.activeCardComments)
     },
     addList(newListName) {
       const headers = new Headers();
@@ -431,7 +516,7 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    renameTitleOfList(newTitle){
+    renameTitleOfList(newTitle) {
 
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -459,10 +544,33 @@ export default {
           .catch(error => console.log('error', error));
 
 
-
     },
-    saveNewBackground(){
-        this.showDialogBackgroundEdit = false;
+    saveNewBackground() {
+      this.showDialogBackgroundEdit = false;
+    },
+
+    sendComment(commentContent){
+      this.newCommentContent = '';
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("content", commentContent);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id +"/add_comment", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              await this.loadCommentsForCurrentCard();
+            }
+          })
+          .catch(error => console.log('error', error));
+
     },
     previewFile() {
       const preview = document.querySelector('img');
@@ -470,11 +578,11 @@ export default {
       const reader = new FileReader();
       let vm = this;
 
-      reader.onload = function (){
+      reader.onload = function () {
         preview.src = reader.result;
         console.log("RESULT: " + reader.result)
         this.background = reader.result;
-        console.log("PREVIEW11111: " + this.background )
+        console.log("PREVIEW11111: " + this.background)
         const headers = new Headers();
         headers.append("Authorization", 'Bearer ' + vm.$store.state.token);
         var formdata = new FormData();
@@ -498,7 +606,6 @@ export default {
       }
 
 
-
       reader.addEventListener("load", function () {
         // convert image file to base64 string
         preview.src = reader.result;
@@ -508,14 +615,13 @@ export default {
       })
 
 
-
       if (file) {
         reader.readAsDataURL(file);
       }
 
 
     },
-    updateCardProperties(newCardTitle, newCardDescription){
+    updateCardProperties(newCardTitle, newCardDescription) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
@@ -540,8 +646,10 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+    },
+    formatDate(date){
+      return Moment(date).format('DD.MM.YYYY h:mm:ss');
     }
-
 
 
   }
@@ -552,14 +660,14 @@ export default {
 <style lang="scss" scoped>
 
 
-section{
+section {
   height: 100vh;
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  font-family: "Segoe Print",serif;
+  font-family: "Segoe Print", serif;
 
 }
 
