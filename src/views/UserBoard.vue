@@ -13,7 +13,7 @@
               <template v-if="this.isCurrentCardHasTerm()">
                 <span>
                 <md-chips v-model="terms"
-                         @md-click="openDatePickerOnClick"
+                         @md-click="openDatetime"
                          @md-delete="deleteCurrentCardTerm"
                           md-limit=1
                          @click="deleteCurrentCardTerm">
@@ -22,7 +22,7 @@
 
                 </span>
                 <md-checkbox class="completion_checkbox" style="margin-top: 5px;" v-model="cardTermCompletion"
-                             @click="setCardTermCompletion">
+                             @change="setCardTermCompletion">
                   Realized
                 </md-checkbox>
 
@@ -225,7 +225,7 @@
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
                     <div class="elevation-demo"
-                         @click="showDialogEditCard = true; currentCard = card; terms = [card.term]; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
+                         @click="showDialogEditCard = true; currentCard = card; terms = [card.term]; cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
@@ -303,10 +303,6 @@ export default {
     this.loadContent();
   },
   methods: {
-    // eslint-disable-next-line no-unused-vars
-    openDatePickerOnClick(t, i){
-      this.openDatetime();
-    },
     editCardTerm: async function () {
       if (!this.cardTerm) return;
 
@@ -333,8 +329,7 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    // eslint-disable-next-line no-unused-vars
-    deleteCurrentCardTerm: async function (t, i) {
+    deleteCurrentCardTerm: async function () {
       this.cardWithTerm = true;
       var formdata = new FormData();
       var headers = new Headers();
@@ -350,7 +345,6 @@ export default {
       fetch(this.$API + "/card/" + this.currentCard.id + "/delete_term", requestOptions)
           .then(async response => {
             if (response.ok) {
-              console.log("OK!");
               this.currentCard.term = null;
               this.currentCard.term_completion = null;
             }
@@ -374,7 +368,6 @@ export default {
       fetch(this.$API + "/card/" + this.currentCard.id + "/edit_term", requestOptions)
           .then(async response => {
             if (response.ok) {
-              console.log("OK!");
               this.currentCard.term_completion = this.cardTermCompletion;
             }
           })
