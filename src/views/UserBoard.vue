@@ -251,7 +251,9 @@
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
                     <div class="elevation-demo"
-                         @click="showDialogEditCard = true; currentCard = card;terms = [formatDate(card.term)]; cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
+                         @click="showDialogEditCard = true; currentCard = card;terms = [formatDate(card.term)];
+                         cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description;
+                         loadCommentsForCurrentCard()">
                       <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
