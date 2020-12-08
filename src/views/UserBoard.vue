@@ -23,6 +23,38 @@
                      style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove
           </md-button>
 
+
+          <md-field>
+            <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
+          </md-field>
+          <div style="padding-top: -10px; text-align: right">
+            <md-button class="" style="width: 70px; font-size: 12px; background-color: #0079BF; color: white;"
+                       @click="sendComment(newCommentContent)">Send
+            </md-button>
+          </div>
+          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the comments below
+          </md-button>
+          <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
+            Show the comments below
+          </md-button>
+          <div style="min-width: 100%">
+            <md-content v-if="showCommentsInCard" class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+              <div v-for="(comment) in activeCardComments" v-bind:key="comment.id"
+                   style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
+                <div>
+                  <span class="md-alignment-left"
+                        style="font-size: 10px; display: inline-block; width: 50%">{{ comment.author.username }}</span>
+                  <span class="md-alignment-right"
+                        style="font-size: 10px; padding-right: 5px;text-align: right; display: inline-block; width: 50%">{{
+                      formatDate(comment.created_date)
+                    }}</span>
+                </div>
+                <div>{{ comment.content }}</div>
+              </div>
+
+              <br>
+            </md-content>
+          </div>
           <md-dialog-actions>
             <md-button class="md-raised" :md-ripple="false"
                        style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
@@ -31,32 +63,6 @@
             </md-button>
           </md-dialog-actions>
 
-          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the comments below
-          </md-button>
-          <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
-            Show the comments below
-          </md-button>
-          <div style="min-width: 100%">
-            <md-content v-if="showCommentsInCard" class="md-scrollbar" style="max-height: 200px; min-width: 100%">
-              <md-field>
-                <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
-              </md-field>
-              <div style="padding-top: -10px; text-align: right">
-                <md-button class="" style="width: 70px; font-size: 12px; background-color: #0079BF; color: white;"
-                           @click="sendComment(newCommentContent)">Send
-                </md-button>
-              </div>
-              <div v-for="(comment) in activeCardComments" v-bind:key="comment.id" style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
-                  <div>
-                    <span class="md-alignment-left" style="font-size: 10px; display: inline-block; width: 50%">{{ comment.author.username }}</span>
-                    <span class="md-alignment-right" style="font-size: 10px; padding-right: 5px;text-align: right; display: inline-block; width: 50%">{{ formatDate(comment.created_date) }}</span>
-                  </div>
-                  <div>{{ comment.content }}</div>
-              </div>
-
-              <br>
-            </md-content>
-          </div>
         </md-dialog-content>
       </md-dialog>
 
@@ -549,7 +555,7 @@ export default {
       this.showDialogBackgroundEdit = false;
     },
 
-    sendComment(commentContent){
+    sendComment(commentContent) {
       this.newCommentContent = '';
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -563,7 +569,7 @@ export default {
         redirect: 'follow'
       };
 
-      fetch(this.$API + "/card/" + this.currentCard.id +"/add_comment", requestOptions)
+      fetch(this.$API + "/card/" + this.currentCard.id + "/add_comment", requestOptions)
           .then(async response => {
             if (response.ok) {
               await this.loadCommentsForCurrentCard();
@@ -647,7 +653,7 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    formatDate(date){
+    formatDate(date) {
       return Moment(date).format('DD.MM.YYYY h:mm:ss');
     }
 
