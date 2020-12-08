@@ -12,16 +12,19 @@
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.5",
     "express": "^4.17.1",
+    "luxon": "^1.25.0",
     "material-design-icons": "^3.0.1",
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.4",
     "vue": "^2.6.11",
+    "vue-datetime": "^1.0.0-beta.14",
     "vue-material": "^1.0.0-beta-15",
     "vue-material-design-components": "0.0.10",
     "vue-material-design-icons": "^4.10.0",
     "vuex": "^3.5.1",
     "vuex-persisted": "^0.0.1",
-    "vuex-persistedstate": "^4.0.0-beta.1"
+    "vuex-persistedstate": "^4.0.0-beta.1",
+    "weekstart": "^1.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

@@ -1,25 +1,50 @@
 <template>
-  <section :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
+  <section
+      :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
     <div class="full-control">
       <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
-<!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
+        <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
         <md-dialog-content>
           <md-field>
-          <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
+            <md-input v-model="newEditCardTitle" style="font-size: 30px"></md-input>
+          </md-field>
+          <div class="datetime-input-container">
+
+            <md-button @click="openDatetime">
+              Add term
+            </md-button>
+            <datetime hidden
+                      ref="datetime"
+                      type="datetime"
+                      v-model="cardTerm"
+                      :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
+                      :phrases="{ok: 'Continue', cancel: 'Exit'}"
+                      :hour-step="2"
+                      :minute-step="15"
+                      :week-start="7"
+                      auto
+            ></datetime>
+          </div>
+          <md-field>
+            <label>Description</label>
+            <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
+            <md-icon>description</md-icon>
           </md-field>
 
-            <md-field>
-              <label>Description</label>
-              <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
-              <md-icon>description</md-icon>
-            </md-field>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">
+            Archive
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove
+          </md-button>
 
-            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">Archive</md-button>
-            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove</md-button>
-
-            <md-dialog-actions>
-              <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close</md-button>
-            </md-dialog-actions>
+          <md-dialog-actions>
+            <md-button class="md-raised" :md-ripple="false"
+                       style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                       @click="updateCardProperties(newEditCardTitle, newEditCardDescription)">Close
+            </md-button>
+          </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
 
@@ -37,10 +62,13 @@
                 <img :src="newBackground64">
               </div>
             </template>
-  <!--          <img :src="newBackground" class="image">-->
+            <!--          <img :src="newBackground" class="image">-->
           </md-tab>
           <md-dialog-actions>
-            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="saveNewBackground()">OK</md-button>
+            <md-button class="md-raised" :md-ripple="false"
+                       style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                       @click="saveNewBackground()">OK
+            </md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -54,8 +82,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogList = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addList(newListTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogList = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="addList(newListTitle)">Add
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -68,8 +102,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogAddCard = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addCard(newCardTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogAddCard = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="addCard(newCardTitle)">Add
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -82,8 +122,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameList = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogRenameList = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="renameTitleOfList(newTitleOfList)">Save
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -96,8 +142,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameBoard = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogRenameBoard = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="renameTitleOfBoard(newTitleOfBoard)">Save
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -134,7 +186,8 @@
                       <md-icon style="color: black;">more_vert</md-icon>
                     </md-button>
                     <md-menu-content>
-                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title</md-menu-item>
+                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title
+                      </md-menu-item>
                       <md-menu-item>Move list</md-menu-item>
                       <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
                       <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
@@ -146,14 +199,16 @@
               <md-content class="md-scrollbar">
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
-                    <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
+                    <div class="elevation-demo"
+                         @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">
+                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                         <md-ripple>
                           <md-card-header>
                             <div class="md-title">{{ card.title }}</div>
                           </md-card-header>
-<!--                          <md-button class="md-icon-button">-->
-<!--                            <md-icon>favorite</md-icon>-->
-<!--                          </md-button>-->
+                          <!--                          <md-button class="md-icon-button">-->
+                          <!--                            <md-icon>favorite</md-icon>-->
+                          <!--                          </md-button>-->
                         </md-ripple>
                       </md-card>
                     </div>
@@ -170,23 +225,29 @@
                 </md-list-item>
               </md-list>
 
-          </div>
-        </template>
+            </div>
+          </template>
+        </div>
+        <div>
+          <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">
+            Add
+            list
+          </md-button>
+        </div>
       </div>
-      <div>
-        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
-          list
-        </md-button>
-      </div>
-    </div>
     </div>
   </section>
 </template>
 
 <script>
+import 'vue-datetime/dist/vue-datetime.css'
+import {Datetime} from 'vue-datetime';
 
 export default {
   name: "UserBoard",
+  components: {
+    Datetime
+  },
   data() {
     return {
       newTitleOfBoard: "",
@@ -205,7 +266,9 @@ export default {
       closeOnClick: false,
       closeOnSelect: true,
       description: null,
-      files: null
+      files: null,
+      cardTerm: ""
+
     }
   },
   created: async function () {
@@ -216,7 +279,7 @@ export default {
     loadContent: async function () {
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
-      let response =  await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
+      let response = await fetch(this.$API + "/board_context?board_id=" + this.board.id, {headers: headers})
       let data = await response.json()
       this.board.background = data.board_properties.background;
       this.lists = data.lists;
@@ -225,7 +288,7 @@ export default {
       console.log("RESULT" + data)
 
       console.log("lists" + this.lists)
-      console.log("board_properties " +  this.newBackground64 )
+      console.log("board_properties " + this.newBackground64)
     },
     addList(newListName) {
       const headers = new Headers();
@@ -325,6 +388,9 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+    },
+    openDatetime() {
+      this.$refs.datetime.isOpen = true;
     },
     removeList(currentListID) {
       const headers = new Headers();
@@ -431,7 +497,7 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    renameTitleOfList(newTitle){
+    renameTitleOfList(newTitle) {
 
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -459,10 +525,9 @@ export default {
           .catch(error => console.log('error', error));
 
 
-
     },
-    saveNewBackground(){
-        this.showDialogBackgroundEdit = false;
+    saveNewBackground() {
+      this.showDialogBackgroundEdit = false;
     },
     previewFile() {
       const preview = document.querySelector('img');
@@ -470,11 +535,11 @@ export default {
       const reader = new FileReader();
       let vm = this;
 
-      reader.onload = function (){
+      reader.onload = function () {
         preview.src = reader.result;
         console.log("RESULT: " + reader.result)
         this.background = reader.result;
-        console.log("PREVIEW11111: " + this.background )
+        console.log("PREVIEW11111: " + this.background)
         const headers = new Headers();
         headers.append("Authorization", 'Bearer ' + vm.$store.state.token);
         var formdata = new FormData();
@@ -498,7 +563,6 @@ export default {
       }
 
 
-
       reader.addEventListener("load", function () {
         // convert image file to base64 string
         preview.src = reader.result;
@@ -508,14 +572,13 @@ export default {
       })
 
 
-
       if (file) {
         reader.readAsDataURL(file);
       }
 
 
     },
-    updateCardProperties(newCardTitle, newCardDescription){
+    updateCardProperties(newCardTitle, newCardDescription) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
@@ -543,7 +606,6 @@ export default {
     }
 
 
-
   }
 }
 
@@ -552,14 +614,14 @@ export default {
 <style lang="scss" scoped>
 
 
-section{
+section {
   height: 100vh;
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  font-family: "Segoe Print",serif;
+  font-family: "Segoe Print", serif;
 
 }
 
