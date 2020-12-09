@@ -130,6 +130,7 @@
             filter=".action-button"
             class="w-full max-w-xs"
             tag="elevation"
+            @change="cardDraggedAction(lists)"
             style="display: flex;
               flex-wrap: wrap;"
         >
@@ -162,6 +163,7 @@
                   filter=".action-button"
                   class="w-full max-w-xs"
                   tag="ul"
+                  @change="cardDraggedAction(lists)"
               >
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
@@ -237,6 +239,26 @@ export default {
     this.loadContent();
   },
   methods: {
+    cardDraggedAction(lists){
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("lists_state", JSON.stringify(lists));
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch("http://localhost:5000/save_components_state", requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.log('error', error));
+
+
+    },
     loadContent: async function () {
       var headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
