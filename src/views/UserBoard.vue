@@ -48,6 +48,11 @@
             </md-content>
           </template>
 
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">
+            Archive
+          </md-button>
+
           <md-field>
             <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
           </md-field>
@@ -278,96 +283,99 @@
       </md-toolbar>
 
       <div class="wrapp">
-        <draggable
-            :list="lists"
-            :animation="200"
-            ghost-class="moving-card"
-            group="lists"
-            filter=".action-button"
-            class="w-full max-w-xs"
-            tag="elevation"
-            @change="cardDraggedAction(lists)"
-            style="display: flex;
-              flex-wrap: wrap;"
-        >
-          <div v-for="(list) in lists" v-bind:key="list.id">
-            <template v-if="!list.is_archieve">
-              <div class="viewport">
-                <md-toolbar :md-elevation="1">
-                  <span class="md-title">{{ list.title }}</span>
-                  <div class="separator md-toolbar-section-end">
-                    <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect">
-                      <md-button md-menu-trigger class="md-icon-button" style="background: transparent">
-                        <md-icon style="color: black;">more_vert</md-icon>
-                      </md-button>
-                      <md-menu-content>
-                        <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title
-                        </md-menu-item>
-                        <md-menu-item @click="showMoveList = true; currentListID = list.id">Move list</md-menu-item>
-                        <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
-                        <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
-                      </md-menu-content>
-                    </md-menu>
-                  </div>
-                </md-toolbar>
+        <horizontal-scroll>
+          <draggable
+              :list="lists"
+              :animation="200"
+              ghost-class="moving-card"
+              group="lists"
+              filter=".action-button"
+              class="w-full max-w-xs"
+              tag="elevation"
+              @change="cardDraggedAction(lists)"
+              style="display: flex;
+                flex-wrap: wrap;"
+          >
+            <div v-for="(list) in lists" v-bind:key="list.id">
+              <template v-if="!list.is_archieve">
+                <div class="viewport">
+                  <md-toolbar :md-elevation="1" style="border-radius: 10px">
+                    <span class="md-title" style="font-size: 16px">{{ list.title }}</span>
+                    <div class="separator md-toolbar-section-end">
+                      <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect"
+                               style="border-radius: 10px">
+                        <md-button md-menu-trigger class="md-icon-button" style="background: transparent">
+                          <md-icon style="color: black;">more_vert</md-icon>
+                        </md-button>
+                        <md-menu-content style="border-radius: 10px">
+                          <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title
+                          </md-menu-item>
+                          <md-menu-item @click="showMoveList = true; currentListID = list.id">Move list</md-menu-item>
+                          <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
+                          <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
+                        </md-menu-content>
+                      </md-menu>
+                    </div>
+                  </md-toolbar>
 
-                <md-content class="md-scrollbar">
-                  <draggable
-                      :list="list.cards"
-                      :animation="200"
-                      ghost-class="moving-card"
-                      group="list.cards"
-                      filter=".action-button"
-                      class="w-full max-w-xs"
-                      tag="ul"
-                      @change="cardDraggedAction(lists)"
-                  >
-                    <div v-for="(card) in list.cards" v-bind:key="card.id">
-                      <template v-if="!card.is_archieve">
-                        <div class="elevation-demo"
-                             @click="clearColorsActive(); palletColorShow = false; showDialogEditCard = true; currentCardId = card.id; currentCard = card;
+                  <md-content class="md-scrollbar" style="border-radius: 10px">
+                    <draggable
+                        :list="list.cards"
+                        :animation="200"
+                        ghost-class="moving-card"
+                        group="list.cards"
+                        filter=".action-button"
+                        class="w-full max-w-xs"
+                        tag="ul"
+                        @change="cardDraggedAction(lists)"
+                    >
+                      <div v-for="(card) in list.cards" v-bind:key="card.id">
+                        <template v-if="!card.is_archieve">
+                          <div class="elevation-demo" style="border-radius: 10px"
+                               @click="clearColorsActive(); palletColorShow = false; showDialogEditCard = true; currentCardId = card.id; currentCard = card;
                         terms = [formatDate(card.term)];
                         cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description;
                         loadCommentsForCurrentCard()">
-                          <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
-                            <md-ripple>
-                              <div style="justify-content: left;display: flex; flex-wrap: wrap;">
-                                <div v-for="(colorCard) in card.label" v-bind:key="colorCard">
-                                  <md-icon class="md-size-2x" :style="`color: #${colorCard}`">label</md-icon>
+                            <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
+                              <md-ripple>
+                                <div style="justify-content: left;display: flex; flex-wrap: wrap;">
+                                  <div v-for="(colorCard) in card.label" v-bind:key="colorCard">
+                                    <md-icon class="md-size-2x" :style="`color: #${colorCard}`">label</md-icon>
+                                  </div>
                                 </div>
-                              </div>
-                              <md-card-header>
-                                <div class="md-title">{{ card.title }}</div>
-                              </md-card-header>
-                              <!--                          <md-button class="md-icon-button">-->
-                              <!--                            <md-icon>favorite</md-icon>-->
-                              <!--                          </md-button>-->
-                            </md-ripple>
-                          </md-card>
-                        </div>
-                      </template>
-                    </div>
-                  </draggable>
-                </md-content>
-                <md-list class="md-double-line">
-                  <md-list-item style="margin-right: auto; margin-left: auto;">
-                    <md-button @click="showDialogAddCard = true; currentListID = list.id" class="md-icon-button"
-                               style="color: white; background-color: #d94395;">
-                      <md-icon style="color: white;">add</md-icon>
-                    </md-button>
-                  </md-list-item>
-                </md-list>
+                                <md-card-header>
+                                  <div class="md-title" style="font-size: 14px">{{ card.title }}</div>
+                                </md-card-header>
+                                <!--                          <md-button class="md-icon-button">-->
+                                <!--                            <md-icon>favorite</md-icon>-->
+                                <!--                          </md-button>-->
+                              </md-ripple>
+                            </md-card>
+                          </div>
+                        </template>
+                      </div>
+                    </draggable>
+                  </md-content>
+                  <md-list class="md-double-line" style="border-radius: 10px">
+                    <md-list-item style="border-radius:10px; margin-right: auto; margin-left: auto;">
+                      <md-button @click="showDialogAddCard = true; currentListID = list.id" class="md-icon-button"
+                                 style="color: white; background-color: #d94395;">
+                        <md-icon style="color: white;">add</md-icon>
+                      </md-button>
+                    </md-list-item>
+                  </md-list>
 
-              </div>
-            </template>
-          </div>
-          <div>
-            <md-button @click="showDialogList = true" class="md-raised"
-                       style="color: white; background-color: #d94395;">Add
-              list
-            </md-button>
-          </div>
-        </draggable>
+                </div>
+              </template>
+            </div>
+            <div>
+              <md-button @click="showDialogList = true" class="md-raised"
+                         style="color: white; background-color: #d94395;">Add
+                list
+              </md-button>
+            </div>
+          </draggable>
+        </horizontal-scroll>
       </div>
     </div>
   </section>
