@@ -14,9 +14,34 @@
             <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
             <md-icon>description</md-icon>
           </md-field>
+          <template v-if="this.isCurrentCardHasTerm()">
+            <span>
+            <md-chips v-model="terms"
+                      @md-click="openDatetime"
+                      @md-delete="deleteCurrentCardTerm"
+                      md-limit=1
+                      @click="deleteCurrentCardTerm">
+            </md-chips>
 
-          <!--          <v-swatches v-model="color">-->
-          <!--          </v-swatches>-->
+
+            </span>
+            <md-checkbox class="completion_checkbox" style="margin-top: 5px;" v-model="cardTermCompletion"
+                         @change="setCardTermCompletion">
+              Realized
+            </md-checkbox>
+          </template>
+          <datetime hidden
+                    ref="datetime"
+                    type="datetime"
+                    v-model="cardTerm"
+                    :format="{ year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }"
+                    :phrases="{ok: 'Continue', cancel: 'Exit'}"
+                    :hour-step="2"
+                    :minute-step="15"
+                    :week-start="7"
+                    v-on:close="editCardTerm"
+                    auto
+          ></datetime>
 
           <md-button md-menu-trigger class="md-raised" :md-ripple="false"
                      style="width: 100px; font-size: 14px; background-color: transparent;"
@@ -52,7 +77,12 @@
                      style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">
             Archive
           </md-button>
-
+          <template v-if="!this.isCurrentCardHasTerm()">
+            <md-button class="md-raised" :md-ripple="false"
+                       style="width: 100px; font-size: 14px; background-color: transparent;" @click="openDatetime()">
+              Add term
+            </md-button>
+          </template>
           <md-field>
             <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
           </md-field>
@@ -411,6 +441,10 @@ export default {
       closeOnSelect: true,
       description: null,
       files: null,
+      cardTerm: "",
+      terms: [],
+      cardWithTerm: false,
+      cardTermCompletion: false,
       archivedBoards: [],
       nonArchivedBoards: [],
       showMoveList: false,
@@ -442,6 +476,9 @@ export default {
     this.loadContent();
   },
   methods: {
+    openDatetime() {
+      this.$refs.datetime.isOpen = true;
+    },
     cardDraggedAction(lists) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -459,8 +496,85 @@ export default {
           .then(response => response.text())
           .then(result => console.log(result))
           .catch(error => console.log('error', error));
+    },
+    editCardTerm: async function () {
+      if (!this.cardTerm) return;
 
+      this.cardWithTerm = true;
+      var formdata = new FormData();
+      formdata.append("term", this.cardTerm);
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
 
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/edit_term", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              console.log("OK!");
+              this.currentCard.term = this.cardTerm;
+              this.terms = [this.formatDate(this.cardTerm)]
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    deleteCurrentCardTerm: async function () {
+      this.cardWithTerm = true;
+      var formdata = new FormData();
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      var requestOptions = {
+        method: 'DELETE',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/delete_term", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              this.currentCard.term = null;
+              this.currentCard.term_completion = null;
+              this.cardTermCompletion = false;
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    setCardTermCompletion() {
+      this.cardWithTerm = true;
+      var formdata = new FormData();
+      formdata.append("term_completion", this.cardTermCompletion);
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/card/" + this.currentCard.id + "/edit_term", requestOptions)
+          .then(async response => {
+            if (response.ok) {
+              this.currentCard.term_completion = this.cardTermCompletion;
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    isCurrentCardHasTerm() {
+      if (this.currentCard) {
+        if (this.currentCard.term) {
+          return true;
+        }
+      }
+      return false;
     },
     loadContent: async function () {
       var headers = new Headers();
