@@ -1,6 +1,5 @@
 <template>
-  <section
-      :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
+  <section :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
     <div class="full-control">
       <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
         <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
@@ -19,6 +18,11 @@
                           @click="deleteCurrentCardTerm">
                 </md-chips>
 
+            <md-field>
+              <label>Description</label>
+              <md-textarea v-model="newEditCardDescription" style="width: 600px;"></md-textarea>
+              <md-icon>description</md-icon>
+            </md-field>
 
                 </span>
                 <md-checkbox class="completion_checkbox" style="margin-top: 5px;" v-model="cardTermCompletion"
@@ -113,13 +117,10 @@
                 <img :src="newBackground64">
               </div>
             </template>
-            <!--          <img :src="newBackground" class="image">-->
+  <!--          <img :src="newBackground" class="image">-->
           </md-tab>
           <md-dialog-actions>
-            <md-button class="md-raised" :md-ripple="false"
-                       style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                       @click="saveNewBackground()">OK
-            </md-button>
+            <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="saveNewBackground()">OK</md-button>
           </md-dialog-actions>
         </md-dialog-content>
       </md-dialog>
@@ -133,14 +134,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="showDialogList = false">Cancel
-          </md-button>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="addList(newListTitle)">Add
-          </md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogList = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addList(newListTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -153,14 +148,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="showDialogAddCard = false">Cancel
-          </md-button>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="addCard(newCardTitle)">Add
-          </md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogAddCard = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addCard(newCardTitle)">Add</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -173,14 +162,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="showDialogRenameList = false">Cancel
-          </md-button>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="renameTitleOfList(newTitleOfList)">Save
-          </md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameList = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -193,14 +176,8 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="showDialogRenameBoard = false">Cancel
-          </md-button>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="renameTitleOfBoard(newTitleOfBoard)">Save
-          </md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameBoard = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -225,7 +202,18 @@
       </md-toolbar>
 
       <div class="wrapp">
-
+        <draggable
+            :list="lists"
+            :animation="200"
+            ghost-class="moving-card"
+            group="lists"
+            filter=".action-button"
+            class="w-full max-w-xs"
+            tag="elevation"
+            @change="cardDraggedAction(lists)"
+            style="display: flex;
+              flex-wrap: wrap;"
+        >
         <div v-for="(list) in lists" v-bind:key="list.id">
           <template v-if="!list.is_archieve">
             <div class="viewport">
@@ -237,8 +225,7 @@
                       <md-icon style="color: black;">more_vert</md-icon>
                     </md-button>
                     <md-menu-content>
-                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title
-                      </md-menu-item>
+                      <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title</md-menu-item>
                       <md-menu-item>Move list</md-menu-item>
                       <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
                       <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
@@ -248,6 +235,16 @@
               </md-toolbar>
 
               <md-content class="md-scrollbar">
+                <draggable
+                  :list="list.cards"
+                  :animation="200"
+                  ghost-class="moving-card"
+                  group="list.cards"
+                  filter=".action-button"
+                  class="w-full max-w-xs"
+                  tag="ul"
+                  @change="cardDraggedAction(lists)"
+              >
                 <div v-for="(card) in list.cards" v-bind:key="card.id">
                   <template v-if="!card.is_archieve">
                     <div class="elevation-demo"
@@ -259,15 +256,15 @@
                           <md-card-header>
                             <div class="md-title">{{ card.title }}</div>
                           </md-card-header>
-                          <!--                          <md-button class="md-icon-button">-->
-                          <!--                            <md-icon>favorite</md-icon>-->
-                          <!--                          </md-button>-->
+<!--                          <md-button class="md-icon-button">-->
+<!--                            <md-icon>favorite</md-icon>-->
+<!--                          </md-button>-->
                         </md-ripple>
                       </md-card>
                     </div>
                   </template>
                 </div>
-
+                </draggable>
               </md-content>
               <md-list class="md-double-line">
                 <md-list-item style="margin-right: auto; margin-left: auto;">
@@ -278,16 +275,16 @@
                 </md-list-item>
               </md-list>
 
-            </div>
-          </template>
-        </div>
-        <div>
-          <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">
-            Add
-            list
-          </md-button>
-        </div>
+          </div>
+        </template>
       </div>
+      <div>
+        <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
+          list
+        </md-button>
+      </div>
+        </draggable>
+    </div>
     </div>
   </section>
 </template>
@@ -295,7 +292,11 @@
 <script>
 import Moment from "moment-js";
 
+import draggable from 'vuedraggable';
 export default {
+  components: {
+    draggable
+  },
   name: "UserBoard",
   data() {
     return {
@@ -408,6 +409,26 @@ export default {
         }
       }
       return false;
+    },
+    cardDraggedAction(lists){
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("lists_state", JSON.stringify(lists));
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch("http://localhost:5000/save_components_state", requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.log('error', error));
+
+
     },
     loadContent: async function () {
       var headers = new Headers();
@@ -704,11 +725,11 @@ export default {
       const reader = new FileReader();
       let vm = this;
 
-      reader.onload = function () {
+      reader.onload = function (){
         preview.src = reader.result;
         console.log("RESULT: " + reader.result)
         this.background = reader.result;
-        console.log("PREVIEW11111: " + this.background)
+        console.log("PREVIEW11111: " + this.background )
         const headers = new Headers();
         headers.append("Authorization", 'Bearer ' + vm.$store.state.token);
         var formdata = new FormData();
@@ -732,6 +753,7 @@ export default {
       }
 
 
+
       reader.addEventListener("load", function () {
         // convert image file to base64 string
         preview.src = reader.result;
@@ -741,13 +763,14 @@ export default {
       })
 
 
+
       if (file) {
         reader.readAsDataURL(file);
       }
 
 
     },
-    updateCardProperties(newCardTitle, newCardDescription) {
+    updateCardProperties(newCardTitle, newCardDescription){
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
@@ -778,6 +801,7 @@ export default {
     }
 
 
+
   }
 }
 
@@ -786,14 +810,14 @@ export default {
 <style lang="scss" scoped>
 
 
-section {
+section{
   height: 100vh;
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  font-family: "Segoe Print", serif;
+  font-family: "Segoe Print",serif;
 
 }
 
@@ -864,4 +888,12 @@ span {
   padding-top: 75px;
 }
 
+.moving-card {
+  opacity: 0.5;
+  background: #f7fafc;
+}
+
+ul{
+  padding: 0px;
+}
 </style>

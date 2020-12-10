@@ -8,10 +8,12 @@ import 'vue-material-design-icons/styles.css';
 import 'material-design-icons/iconfont/material-icons.css'
 import 'vue-datetime/dist/vue-datetime.css'
 import { Datetime } from 'vue-datetime';
+import VueDraggable from 'vue-draggable'
 
 Vue.component('datetime', Datetime);
 Vue.config.productionTip = false
 
+Vue.use(VueDraggable);
 Vue.use(VueMaterial)
 Vue.use(Datetime)
 
