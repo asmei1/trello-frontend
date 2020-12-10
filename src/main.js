@@ -6,9 +6,11 @@ import 'vue-material/dist/vue-material.css'
 import 'vue-material/dist/theme/default.css'
 import 'vue-material-design-icons/styles.css';
 import 'material-design-icons/iconfont/material-icons.css'
+import VueDraggable from 'vue-draggable'
 
 Vue.config.productionTip = false
 
+Vue.use(VueDraggable);
 Vue.use(VueMaterial)
 
 Vue.prototype.$API = process.env.NODE_ENV === 'development'

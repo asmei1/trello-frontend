@@ -17,9 +17,13 @@
     "node-sass": "^4.14.1",
     "sass-loader": "^10.0.4",
     "vue": "^2.6.11",
+    "vue-drag-and-drop-list": "^1.0.0",
+    "vue-draggable": "^2.0.6",
     "vue-material": "^1.0.0-beta-15",
     "vue-material-design-components": "0.0.10",
     "vue-material-design-icons": "^4.10.0",
+    "vue2-perfect-scrollbar": "^1.5.0",
+    "vuedraggable": "^2.24.3",
     "vuex": "^3.5.1",
     "vuex-persisted": "^0.0.1",
     "vuex-persistedstate": "^4.0.0-beta.1"
