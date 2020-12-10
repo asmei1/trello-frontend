@@ -32,11 +32,15 @@
 
         <div v-for="(board) in archivedBoards" v-bind:key="board.id">
   <!--        <router-link :to="{name: 'UserBoard', params:{ boardID: board.id, boardTitle: board.title }}">-->
-            <md-button class="md-raised" style="font-size: 20px" :style="{ backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft'}">
+            <md-button class="md-raised" style="font-size: 20px;" :style="{ backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft'}">
               {{ board.title }}
-              <md-button @click="unarchiveBoard(board.id)" class="md-icon-button" style="color: white; background-color: darkgreen">
+
+              <md-button @click="unarchiveBoard(board.id)" class="md-icon-button md-list-action" style="color: white; background-color: darkgreen">
                 <md-icon style="color: white;">restore</md-icon>
               </md-button>
+<!--              <md-button class="md-icon-button md-list-action" style="color: white; background-color: black">-->
+<!--              <md-icon style="color: white">delete</md-icon>-->
+<!--            </md-button>-->
 <!--              <md-button class="md-icon-button">-->
 <!--                <md-icon>delete</md-icon>-->
 <!--              </md-button>-->

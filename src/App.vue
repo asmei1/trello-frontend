@@ -1,8 +1,6 @@
 <template>
   <div id=app>
-    <div class="md-fixed">
-      <Header/>
-    </div>
+      <Header style="height: 65px"/>
     <router-view></router-view>
   </div>
 </template>
