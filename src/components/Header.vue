@@ -1,10 +1,10 @@
 <template>
-  <md-app md-waterfall md-mode="fixed">
+  <md-app md-mode="fixed">
     <md-app-toolbar style="background-color: #0079BF;">
       <router-link to="/" style="text-decoration: none; color: inherit;">
         <span class="md-title" style="color: white;">Cripplello</span>
       </router-link>
-      <div class="md-toolbar-section-end">
+      <div class="md-toolbar-section-end" >
         <!--        <template v-if="isUserLogIn">-->
         <!--          <span class="md-title" style="color: white; font-size: 20px">{{ this.$store.state.user.username }}</span>-->
         <!--          <md-button @click="logout()" class="md-raised" style="color: white; background-color: #d94395;">Logout-->

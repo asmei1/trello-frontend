@@ -1,5 +1,6 @@
 <template>
-  <section :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
+  <section
+      :style="{backgroundImage: `url(${board.background})`, backgroundSize: 'cover', backgroundPosition: 'topLeft', linearGradient: '(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4))'}">
     <div class="full-control">
       <md-dialog :md-active.sync="showDialogEditCard" style="justify-content: center;">
         <!--        <md-dialog-title>{{ currentCard.title }}</md-dialog-title>-->
@@ -14,14 +15,38 @@
             <md-icon>description</md-icon>
           </md-field>
 
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="archiveCard()">
-            Archive
-          </md-button>
-          <md-button class="md-raised" :md-ripple="false"
-                     style="width: 100px; font-size: 14px; background-color: transparent;" @click="removeCard()">Remove
+          <!--          <v-swatches v-model="color">-->
+          <!--          </v-swatches>-->
+
+          <md-button md-menu-trigger class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: transparent;"
+                     @click="getLabel();  palletColorShow = !palletColorShow; currentCard = card; currentListID=list.id">
+            Add label
           </md-button>
 
+          <template v-if="palletColorShow">
+            <md-content class="md-scrollbar" style="height: 200px;">
+              <div v-for="(color) in colors" v-bind:key="color.id">
+                <div @click="color.active = !color.active; setLabelOnCard(color.color, color.active);"
+                     class="elevation-demo">
+                  <md-card md-with-hover :style="`background-color: #${color.color}`"
+                           style="border-radius: 15px; margin: 10px; height: 30px">
+                    <md-ripple class="md-toolbar-section-end">
+                      <md-card-header class="md-toolbar-section-start">
+                        <div class="md-title" style="color: white; font-size: 16px">{{ color.color }}</div>
+                      </md-card-header>
+                      <template v-if="color.active">
+
+                        <div>
+                          <md-icon class="md-size-x" style="margin-right: 30px; color: white">check</md-icon>
+                        </div>
+                      </template>
+                    </md-ripple>
+                  </md-card>
+                </div>
+              </div>
+            </md-content>
+          </template>
 
           <md-field>
             <md-input v-model="newCommentContent" placeholder="Type your comment"></md-input>
@@ -54,14 +79,14 @@
               <br>
             </md-content>
           </div>
+
           <md-dialog-actions>
             <md-button class="md-raised" :md-ripple="false"
                        style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                       @click="newCommentContent = ''; updateCardProperties(newEditCardTitle, newEditCardDescription)">
+                       @click="updateCardProperties(newEditCardTitle, newEditCardDescription); showDialogEditCard = false">
               Close
             </md-button>
           </md-dialog-actions>
-
         </md-dialog-content>
       </md-dialog>
 
@@ -99,8 +124,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogList = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addList(newListTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogList = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="addList(newListTitle)">Add
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -113,8 +144,14 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogAddCard = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="addCard(newCardTitle)">Add</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogAddCard = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="addCard(newCardTitle)">Add
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -127,22 +164,96 @@
           </md-field>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameList = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfList(newTitleOfList)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showDialogRenameBoard = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="renameTitleOfBoard(newTitleOfBoard)">Save
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
-      <md-dialog :md-active.sync="showDialogRenameBoard">
-        <md-dialog-title>Rename</md-dialog-title>
+      <md-dialog :md-active.sync="showMoveList">
+        <md-dialog-title>Move list to:</md-dialog-title>
         <md-tab md-label="General">
-          <md-field>
-            <label>New title</label>
-            <md-input v-model="newTitleOfBoard"></md-input>
-          </md-field>
+          <div v-for="(boardReader) in nonArchivedBoards" v-bind:key="boardReader.id">
+            <template v-if="board.id != boardReader.id">
+              <md-radio v-model="radio" :value=boardReader.id>{{ boardReader.title }}</md-radio>
+            </template>
+          </div>
         </md-tab>
         <md-dialog-actions>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameBoard = false">Cancel</md-button>
-          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showMoveList = false">Cancel
+          </md-button>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="saveMoveList(radio)">Move
+          </md-button>
+        </md-dialog-actions>
+      </md-dialog>
+
+      <md-dialog :md-active.sync="showArchivedItems">
+        <md-dialog-title>Archived items</md-dialog-title>
+        <md-tab md-label="General">
+
+          <md-list class="md-double-line">
+            <md-card-header style="font-size: 18px">Archived lists</md-card-header>
+            <md-content class="md-scrollbar" style="height: 200px; width: 400px; border-color: #0047AB">
+
+              <div v-for="(archived_list) in archived_lists" v-bind:key="archived_list.id">
+                <md-list-item>
+                  <div class="md-list-item-text">
+                    <span>{{ archived_list.title }}</span>
+                  </div>
+
+                  <md-button @click="unarchiveList(archived_list.id)" class="md-icon-button md-list-action">
+                    <md-icon style="color: darkgreen">restore</md-icon>
+                  </md-button>
+                  <md-button @click="removeList(archived_list.id)" class="md-icon-button md-list-action">
+                    <md-icon style="color: black">delete</md-icon>
+                  </md-button>
+                </md-list-item>
+              </div>
+            </md-content>
+
+            <br>
+            <hr size="1" width="90%" color="grey">
+
+            <md-card-header style="font-size: 18px">Archived cards</md-card-header>
+            <md-content class="md-scrollbar" style="height: 200px; width: 400px;">
+              <div v-for="(archived_cards, archived_list_title) in archieved_cards_from_list"
+                   v-bind:key="archived_cards.id">
+                <div v-for="(archived_card) in archived_cards" v-bind:key="archived_card.id">
+                  <md-list-item class="md-scrollbar">
+                    <div class="md-list-item-text">
+                      <span>{{ archived_card.title }}</span>
+                      <span>{{ archived_list_title }}</span>
+                    </div>
+
+                    <md-button @click="unarchiveCard(archived_card.id, archived_card.list_id)"
+                               class="md-icon-button md-list-action">
+                      <md-icon style="color: darkgreen">restore</md-icon>
+                    </md-button>
+                    <md-button @click="removeCard(archived_card.id, archived_card.list_id)"
+                               class="md-icon-button md-list-action">
+                      <md-icon style="color: black">delete</md-icon>
+                    </md-button>
+                  </md-list-item>
+                </div>
+              </div>
+            </md-content>
+          </md-list>
+
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-raised" :md-ripple="false"
+                     style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
+                     @click="showArchivedItems = false">Ok
+          </md-button>
         </md-dialog-actions>
       </md-dialog>
 
@@ -159,7 +270,7 @@
             <md-menu-content>
               <md-menu-item @click="showDialogRenameBoard = true;">Edit title</md-menu-item>
               <md-menu-item @click="showDialogBackgroundEdit = true;">Edit background</md-menu-item>
-              <md-menu-item>Archived items</md-menu-item>
+              <md-menu-item @click="getArchivedItem()">Archived items</md-menu-item>
               <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
             </md-menu-content>
           </md-menu>
@@ -190,8 +301,9 @@
                         <md-icon style="color: black;">more_vert</md-icon>
                       </md-button>
                       <md-menu-content>
-                        <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title</md-menu-item>
-                        <md-menu-item>Move list</md-menu-item>
+                        <md-menu-item @click="showDialogRenameList = true; currentListID = list.id">Edit title
+                        </md-menu-item>
+                        <md-menu-item @click="showMoveList = true; currentListID = list.id">Move list</md-menu-item>
                         <md-menu-item @click="archiveList(list.id)">Archive list</md-menu-item>
                         <md-menu-item @click="removeList(list.id)">Remove list</md-menu-item>
                       </md-menu-content>
@@ -212,16 +324,26 @@
                   >
                     <div v-for="(card) in list.cards" v-bind:key="card.id">
                       <template v-if="!card.is_archieve">
-                        <div class="elevation-demo" @click="showDialogEditCard = true; currentCard = card; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description">                      <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
-                          <md-ripple>
-                            <md-card-header>
-                              <div class="md-title">{{ card.title }}</div>
-                            </md-card-header>
-                            <!--                          <md-button class="md-icon-button">-->
-                            <!--                            <md-icon>favorite</md-icon>-->
-                            <!--                          </md-button>-->
-                          </md-ripple>
-                        </md-card>
+                        <div class="elevation-demo"
+                             @click="clearColorsActive(); palletColorShow = false; showDialogEditCard = true; currentCardId = card.id; currentCard = card;
+                        terms = [formatDate(card.term)];
+                        cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description;
+                        loadCommentsForCurrentCard()">
+                          <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
+                            <md-ripple>
+                              <div style="justify-content: left;display: flex; flex-wrap: wrap;">
+                                <div v-for="(colorCard) in card.label" v-bind:key="colorCard">
+                                  <md-icon class="md-size-2x" :style="`color: #${colorCard}`">label</md-icon>
+                                </div>
+                              </div>
+                              <md-card-header>
+                                <div class="md-title">{{ card.title }}</div>
+                              </md-card-header>
+                              <!--                          <md-button class="md-icon-button">-->
+                              <!--                            <md-icon>favorite</md-icon>-->
+                              <!--                          </md-button>-->
+                            </md-ripple>
+                          </md-card>
                         </div>
                       </template>
                     </div>
@@ -240,7 +362,8 @@
             </template>
           </div>
           <div>
-            <md-button @click="showDialogList = true" class="md-raised" style="color: white; background-color: #d94395;">Add
+            <md-button @click="showDialogList = true" class="md-raised"
+                       style="color: white; background-color: #d94395;">Add
               list
             </md-button>
           </div>
@@ -252,8 +375,9 @@
 
 <script>
 import Moment from "moment-js";
-
+import 'vue-swatches/dist/vue-swatches.css'
 import draggable from 'vuedraggable';
+
 export default {
   components: {
     draggable
@@ -263,6 +387,7 @@ export default {
     return {
       newTitleOfBoard: "",
       currentCard: {},
+      currentCardId: null,
       board: '',
       newBackground64: '',
       lists: [],
@@ -278,6 +403,25 @@ export default {
       closeOnSelect: true,
       description: null,
       files: null,
+      archivedBoards: [],
+      nonArchivedBoards: [],
+      showMoveList: false,
+      radio: false,
+      showArchivedItems: false,
+      archieved_cards_from_list: [],
+      archived_lists: [],
+      color: '#1CA085',
+      palletColorShow: false,
+      colors: [
+        {'active': false, 'color': '008000'},
+        {'active': false, 'color': 'FFD700'},
+        {'active': false, 'color': 'FF6600'},
+        {'active': false, 'color': 'FF0000'},
+        {'active': false, 'color': 'FF00AF'},
+        {'active': false, 'color': '0047AB'},
+        {'active': false, 'color': '000000'},
+      ],
+      colorCardArray: [],
       showCommentsInCard: false,
       newCommentContent: "",
       newListTitle: false,
@@ -286,10 +430,11 @@ export default {
   },
   created: async function () {
     this.board = {"title": this.$route.params.boardTitle, "id": this.$route.params.boardID};
+    this.getUserBoards();
     this.loadContent();
   },
   methods: {
-    cardDraggedAction(lists){
+    cardDraggedAction(lists) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
@@ -323,6 +468,16 @@ export default {
       console.log("lists" + this.lists)
       console.log("board_properties " + this.newBackground64)
     },
+    getUserBoards: async function () {
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      let response = await fetch(this.$API + `/get_user_boards?username=` + this.$store.state.user.username, {headers: headers});
+      let data = await response.json()
+      this.archivedBoards = data.archieve_boards;
+      this.nonArchivedBoards = data.non_archieve_boards;
+      console.log(this.nonArchivedBoards)
+    },
+
     loadCommentsForCurrentCard: async function () {
       console.log("Zaczał ładować " + this.currentCard.id)
 
@@ -434,6 +589,30 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
+    unarchiveList(currentListID) {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("board_id", this.board.id);
+      formdata.append("list_id", currentListID);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/unarchieve_list", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.getArchivedItem();
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
     removeList(currentListID) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -453,6 +632,7 @@ export default {
             console.log(response.ok)
             if (response.ok) {
               this.loadContent();
+              this.getArchivedItem();
             }
           })
           .catch(error => console.log('error', error));
@@ -482,13 +662,38 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    removeCard() {
+    unarchiveCard(currentCard, currentListID) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
-      formdata.append("list_id", this.currentListID);
-      formdata.append("card_id", this.currentCard.id);
+      formdata.append("card_id", currentCard);
+      formdata.append("list_id", currentListID);
 
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/unarchieve_card", requestOptions)
+          .then(response => {
+            console.log(response.ok)
+            if (response.ok) {
+              this.loadContent();
+              this.getArchivedItem();
+            }
+          })
+          .catch(error => console.log('error', error));
+    },
+    removeCard(currentCard, currentListID) {
+      console.log("KUPA" + currentListID + " " + currentCard)
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("list_id", currentListID);
+      formdata.append("card_id", currentCard);
 
       var requestOptions = {
         method: 'POST',
@@ -502,7 +707,7 @@ export default {
             console.log(response.ok)
             if (response.ok) {
               this.loadContent();
-              this.showDialogEditCard = false;
+              this.getArchivedItem();
             }
           })
           .catch(error => console.log('error', error));
@@ -539,7 +744,7 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
-    renameTitleOfList(newTitle){
+    renameTitleOfList(newTitle) {
 
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -601,11 +806,11 @@ export default {
       const reader = new FileReader();
       let vm = this;
 
-      reader.onload = function (){
+      reader.onload = function () {
         preview.src = reader.result;
         console.log("RESULT: " + reader.result)
         this.background = reader.result;
-        console.log("PREVIEW11111: " + this.background )
+        console.log("PREVIEW11111: " + this.background)
         const headers = new Headers();
         headers.append("Authorization", 'Bearer ' + vm.$store.state.token);
         var formdata = new FormData();
@@ -629,7 +834,6 @@ export default {
       }
 
 
-
       reader.addEventListener("load", function () {
         // convert image file to base64 string
         preview.src = reader.result;
@@ -639,18 +843,17 @@ export default {
       })
 
 
-
       if (file) {
         reader.readAsDataURL(file);
       }
 
 
     },
-    updateCardProperties(newCardTitle, newCardDescription){
+    updateCardProperties(newCardTitle, newCardDescription) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
-      formdata.append("card_id", this.currentCard.id);
+      formdata.append("card_id", this.currentCardId);
       formdata.append("list_id", this.currentListID);
       formdata.append("new_title_card", newCardTitle);
       formdata.append("new_description_card", newCardDescription);
@@ -672,10 +875,144 @@ export default {
           })
           .catch(error => console.log('error', error));
     },
+
+    saveMoveList(newBoardId) {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var formdata = new FormData();
+      formdata.append("current_board_id", this.board.id);
+      formdata.append("new_board_id", newBoardId);
+      formdata.append("list_id", this.currentListID);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/move_list_to_another_board", requestOptions)
+          .then(response => response.text())
+          .then(result => {
+            console.log(result)
+            this.showMoveList = false;
+            this.loadContent();
+          })
+          .catch(error => console.log('error', error));
+    },
+
+    getArchivedItem() {
+      this.showArchivedItems = true;
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+
+      var requestOptions = {
+        method: 'GET',
+        headers: headers,
+        redirect: 'follow'
+      };
+
+      fetch(this.$API + "/get_boards_archieved_elements?board_id=" + this.board.id, requestOptions)
+          .then(response => response.json())
+          .then(result => {
+            console.log(result.archieved_cards_from_list)
+            console.log(result.archived_lists)
+            this.archieved_cards_from_list = result.archieved_cards_from_list
+            this.archived_lists = result.archived_lists
+          })
+          .catch(error => console.log('error', error));
+    },
+    async setLabelOnCard(color, active) {
+
+      console.log("setLabel")
+      console.log("list: " + this.currentListID)
+
+      console.log("card: " + this.currentCardId)
+
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      console.log("colors: " + this.colorCardArray)
+
+      if (!active) {
+        for (const i in this.colorCardArray) {
+          console.log("from: " + this.colorCardArray[i])
+          if (this.colorCardArray[i] === color) {
+            this.colorCardArray.splice(i, 1);
+            console.log("remove")
+          }
+        }
+      } else {
+        this.colorCardArray.push(color)
+        console.log("push")
+      }
+
+      console.log("colors: " + this.colorCardArray)
+
+      var formdata = new FormData();
+      formdata.append("list_id", this.currentListID);
+      formdata.append("card_id", this.currentCardId);
+      formdata.append("card_label", JSON.stringify({'labels': this.colorCardArray}));
+
+      var requestOptions = {
+        method: 'POST',
+        headers: headers,
+        body: formdata,
+        redirect: 'follow'
+      };
+
+      await fetch("http://localhost:5000/set_card_label", requestOptions)
+          .then(response => response.text())
+          .then(result => {
+            console.log(result)
+            this.loadContent();
+          })
+          .catch(error => console.log('error', error));
+
+    },
+    async getLabel() {
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      var requestOptions1 = {
+        method: 'GET',
+        headers: headers,
+        redirect: 'follow'
+      };
+
+      await fetch("http://localhost:5000/get_card_label?list_id=" + this.currentListID + "&card_id=" + this.currentCard.id, requestOptions1)
+          .then(response => response.json())
+          .then(result => {
+            if (result.card_label != null) {
+              this.colorCardArray = result.card_label;
+              console.log("result label: " + this.colorCardArray);
+
+              for (const i in this.colors) {
+                this.colors[i].active = false;
+              }
+              for (const j in this.colorCardArray) {
+                for (const i in this.colors) {
+                  if (this.colors[i].color === this.colorCardArray[j]) {
+                    this.colors[i].active = true;
+                    console.log(this.colors[i])
+                    console.log(this.colorCardArray[j])
+                    console.log("true")
+                  }
+                }
+              }
+            }
+            console.log(this.colors)
+          })
+          .catch(error => console.log('error', error));
+    },
+    clearColorsActive() {
+      for (const i in this.colors) {
+        this.colors[i].active = false;
+      }
+    },
     formatDate(date) {
       return Moment(date).format('DD.MM.YYYY h:mm:ss');
     }
-
 
 
   }
@@ -686,14 +1023,14 @@ export default {
 <style lang="scss" scoped>
 
 
-section{
+section {
   height: 100vh;
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
   background-position: top left;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-  font-family: "Segoe Print",serif;
+  font-family: "Segoe Print", serif;
 
 }
 
@@ -769,7 +1106,7 @@ span {
   background: #f7fafc;
 }
 
-ul{
+ul {
   padding: 0px;
 }
 </style>
