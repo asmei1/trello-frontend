@@ -210,6 +210,20 @@
         </md-dialog-actions>
       </md-dialog>
 
+      <md-dialog :md-active.sync="showDialogRenameBoard">
+        <md-dialog-title>Rename</md-dialog-title>
+        <md-tab md-label="General">
+          <md-field>
+            <label>New title</label>
+            <md-input v-model="newTitleOfBoard"></md-input>
+          </md-field>
+        </md-tab>
+        <md-dialog-actions>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="showDialogRenameBoard = false">Cancel</md-button>
+          <md-button class="md-raised" :md-ripple="false" style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;" @click="renameTitleOfBoard(newTitleOfBoard)">Save</md-button>
+        </md-dialog-actions>
+      </md-dialog>
+      
       <md-dialog :md-active.sync="showMoveList">
         <md-dialog-title>Move list to:</md-dialog-title>
         <md-tab md-label="General">
@@ -330,7 +344,7 @@
               <template v-if="!list.is_archieve">
                 <div class="viewport">
                   <md-toolbar :md-elevation="1" style="border-radius: 10px">
-                    <span class="md-title" style="font-size: 16px">{{ list.title }}</span>
+                    <span class="md-title" style="font-size: 15px">{{ list.title }}</span>
                     <div class="separator md-toolbar-section-end">
                       <md-menu md-direction="end" :mdCloseOnClick="closeOnClick" :mdCloseOnSelect="closeOnSelect"
                                style="border-radius: 10px">
@@ -835,6 +849,7 @@ export default {
           .catch(error => console.log('error', error));
     },
     renameTitleOfBoard(newTitle) {
+      this.showDialogRenameBoard = true;
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
       var formdata = new FormData();
@@ -1195,8 +1210,8 @@ h3 {
 }
 
 .viewport {
-  width: 300px;
-  margin: 20px;
+  width: 280px;
+  margin: 10px;
 }
 
 .md-double-line {
