@@ -466,7 +466,7 @@ export default {
       colorCardArray: [],
       showCommentsInCard: false,
       newCommentContent: "",
-      newListTitle: false,
+      newListTitle: "",
       activeCardComments: []
     }
   },
@@ -632,6 +632,7 @@ export default {
             } else {
               alert("Can not add new list to this table");
             }
+            this.newListTitle = "";
           })
           .catch(error => console.log('error', error));
     },
@@ -661,6 +662,7 @@ export default {
             } else {
               alert("Can not add new card to this list");
             }
+            this.newCardTitle = "";
           })
           .catch(error => console.log('error', error));
     },
