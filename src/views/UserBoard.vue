@@ -211,11 +211,11 @@
         <md-dialog-actions>
           <md-button class="md-raised" :md-ripple="false"
                      style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="showDialogRenameBoard = false">Cancel
+                     @click="showDialogRenameList = false">Cancel
           </md-button>
           <md-button class="md-raised" :md-ripple="false"
                      style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
-                     @click="renameTitleOfBoard(newTitleOfBoard)">Save
+                     @click="renameTitleOfList(newTitleOfList)">Save
           </md-button>
         </md-dialog-actions>
       </md-dialog>
