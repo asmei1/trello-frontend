@@ -91,13 +91,13 @@
                        @click="sendComment(newCommentContent)">Send
             </md-button>
           </div>
-          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the comments below
+          <md-button v-if="showCurrentCardHistory" v-on:click="showCurrentCardHistory = false">Hide the card history
           </md-button>
-          <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
-            Show the comments below
+          <md-button v-if="!showCurrentCardHistory" v-on:click="showCurrentCardHistory = true">
+            Show the card history
           </md-button>
           <div style="min-width: 100%">
-            <md-content v-if="showCommentsInCard" class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+            <md-content class="md-scrollbar" style="max-height: 200px; min-width: 100%">
               <div v-for="(comment) in activeCardComments" v-bind:key="comment.id"
                    style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
                 <div>
@@ -114,7 +114,17 @@
               <br>
             </md-content>
           </div>
+          <div  v-if="showCurrentCardHistory" style="min-width: 100%">
+            <md-content class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+              <div v-for="(historyEntry) in activeCardHistory.activity_history" v-bind:key="historyEntry.date"
+                   style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
 
+                <div>{{formatDate(historyEntry.date)}}: {{ historyEntry.description }}</div>
+              </div>
+
+              <br>
+            </md-content>
+          </div>
           <md-dialog-actions>
             <md-button class="md-raised" :md-ripple="false"
                        style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
@@ -245,6 +255,24 @@
         </md-dialog-actions>
       </md-dialog>
 
+      <md-dialog :md-active.sync="showBoardActivity">
+        <md-dialog-title>Activity</md-dialog-title>
+        <md-tab md-label="General">
+
+          <md-list class="md-double-line" >
+            <md-content class="md-scrollbar" style="height: 400px; border-color: #0047AB">
+
+              <div v-for="(historyEntry) in boardActivity.activity_history" v-bind:key="historyEntry.date"
+                   style="width: inherit; background-color: lightgray; padding: 10px; margin-bottom: 10px">
+
+                <div>{{formatDate(historyEntry.date)}}: {{ historyEntry.description }}</div>
+              </div>
+
+            </md-content>
+          </md-list>
+        </md-tab>
+      </md-dialog>
+
       <md-dialog :md-active.sync="showArchivedItems">
         <md-dialog-title>Archived items</md-dialog-title>
         <md-tab md-label="General">
@@ -321,14 +349,15 @@
               <md-menu-item @click="showDialogBackgroundEdit = true;">Edit background</md-menu-item>
               <md-menu-item @click="getArchivedItem()">Archived items</md-menu-item>
               <md-menu-item @click="archiveBoard()">Archive board</md-menu-item>
+              <md-menu-item @click="getBoardActivity()">Activity</md-menu-item>
             </md-menu-content>
           </md-menu>
         </div>
       </md-toolbar>
 
-      <div class="wrapp">
-        <horizontal-scroll>
-          <draggable
+      <div class="wrapp" style=" width: 100%; background-color: transparent">
+
+        <draggable
               :list="lists"
               :animation="200"
               ghost-class="moving-card"
@@ -337,8 +366,7 @@
               class="w-full max-w-xs"
               tag="elevation"
               @change="cardDraggedAction(lists)"
-              style="display: flex;
-                flex-wrap: wrap;"
+              style="display: flex;"
           >
             <div v-for="(list) in lists" v-bind:key="list.id">
               <template v-if="!list.is_archieve">
@@ -379,7 +407,7 @@
                                @click="clearColorsActive(); palletColorShow = false; showDialogEditCard = true; currentCardId = card.id; currentCard = card;
                         terms = [formatDate(card.term)];
                         cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description;
-                        loadCommentsForCurrentCard()">
+                        loadCommentsForCurrentCard(); getHistoryForCurrentCard()">
                             <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                               <md-ripple>
                                 <div style="justify-content: left;display: flex; flex-wrap: wrap;">
@@ -412,14 +440,15 @@
                 </div>
               </template>
             </div>
+
+
             <div>
               <md-button @click="showDialogList = true" class="md-raised"
-                         style="color: white; background-color: #d94395;">Add
-                list
+                         style="color: white; background-color: #d94395;">Add list
               </md-button>
             </div>
           </draggable>
-        </horizontal-scroll>
+
       </div>
     </div>
   </section>
@@ -451,6 +480,7 @@ export default {
       showDialogRenameBoard: false,
       showDialogEditCard: false,
       showDialogBackgroundEdit: false,
+      showBoardActivity: false,
       closeOnClick: false,
       closeOnSelect: true,
       description: null,
@@ -478,10 +508,12 @@ export default {
         {'active': false, 'color': '000000'},
       ],
       colorCardArray: [],
-      showCommentsInCard: false,
+      showCurrentCardHistory: false,
       newCommentContent: "",
-      newListTitle: false,
-      activeCardComments: []
+      newListTitle: "",
+      activeCardComments: [],
+      activeCardHistory: {},
+      boardActivity: {}
     }
   },
   created: async function () {
@@ -603,6 +635,7 @@ export default {
 
       console.log("lists" + this.lists)
       console.log("board_properties " + this.newBackground64)
+
     },
     getUserBoards: async function () {
       var headers = new Headers();
@@ -626,6 +659,16 @@ export default {
 
       console.log(this.activeCardComments)
     },
+    getHistoryForCurrentCard: async function () {
+      this.activeCardHistory = [];
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      let response = await fetch(this.$API + "/get_card_activity_history?card_id=" + this.currentCard.id, {headers: headers})
+      let data = await response.json()
+      this.activeCardHistory = data;
+      console.log(this.activeCardHistory)
+
+    },
     addList(newListName) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -633,6 +676,7 @@ export default {
       var formdata = new FormData();
       formdata.append("board_id", this.board.id);
       formdata.append("new_list_title", newListName);
+      formdata.append("username", this.$store.state.user.username);
       var requestOptions = {
         method: 'POST',
         body: formdata,
@@ -646,6 +690,7 @@ export default {
             } else {
               alert("Can not add new list to this table");
             }
+            this.newListTitle = "";
           })
           .catch(error => console.log('error', error));
     },
@@ -675,6 +720,7 @@ export default {
             } else {
               alert("Can not add new card to this list");
             }
+            this.newCardTitle = "";
           })
           .catch(error => console.log('error', error));
     },
@@ -700,6 +746,20 @@ export default {
             }
           })
           .catch(error => console.log('error', error));
+    },
+
+    async getBoardActivity() {
+
+      const headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+
+      let response = await fetch(this.$API + "/get_board_activity_history?board_id=" + this.board.id, {headers: headers})
+      let data = await response.json()
+      this.boardActivity = data;
+
+      this.showBoardActivity = true;
+
+
     },
 
     archiveList(currentListID) {
@@ -1033,6 +1093,7 @@ export default {
           .then(result => {
             console.log(result)
             this.showMoveList = false;
+            this.getHistoryForCurrentCard();
             this.loadContent();
           })
           .catch(error => console.log('error', error));
@@ -1075,8 +1136,9 @@ export default {
       if (!active) {
         for (const i in this.colorCardArray) {
           console.log("from: " + this.colorCardArray[i])
-          if (this.colorCardArray[i] === color) {
-            this.colorCardArray.splice(i, 1);
+          const index = this.colorCardArray.indexOf(color);
+          if(index > -1){
+            this.colorCardArray.splice(index, 1);
             console.log("remove")
           }
         }
@@ -1103,6 +1165,7 @@ export default {
           .then(response => response.text())
           .then(result => {
             console.log(result)
+            // this.getHistoryForCurrentCard();
             this.loadContent();
           })
           .catch(error => console.log('error', error));
@@ -1182,11 +1245,10 @@ section {
 }
 
 .wrapp {
-  display: flex;
-  justify-content: left;
+  display: flow;
   width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
+  overflow-x: scroll;
+  overflow-scrolling: auto;
   height: 770px;
 }
 
