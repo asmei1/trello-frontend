@@ -91,13 +91,13 @@
                        @click="sendComment(newCommentContent)">Send
             </md-button>
           </div>
-          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the comments below
+          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the card history
           </md-button>
           <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
-            Show the comments below
+            Show the card history
           </md-button>
           <div style="min-width: 100%">
-            <md-content v-if="showCommentsInCard" class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+            <md-content class="md-scrollbar" style="max-height: 200px; min-width: 100%">
               <div v-for="(comment) in activeCardComments" v-bind:key="comment.id"
                    style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
                 <div>
