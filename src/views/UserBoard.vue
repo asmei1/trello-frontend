@@ -1134,13 +1134,10 @@ export default {
       console.log("colors: " + this.colorCardArray)
 
       if (!active) {
-        for (const i in this.colorCardArray) {
-          console.log("from: " + this.colorCardArray[i])
-          const index = this.colorCardArray.indexOf(color);
-          if(index > -1){
-            this.colorCardArray.splice(index, 1);
-            console.log("remove")
-          }
+        const index = this.colorCardArray.indexOf(color);
+        if(index > -1){
+          this.colorCardArray.splice(index, 1);
+          console.log("remove")
         }
       } else {
         this.colorCardArray.push(color)
