@@ -91,9 +91,9 @@
                        @click="sendComment(newCommentContent)">Send
             </md-button>
           </div>
-          <md-button v-if="showCommentsInCard" v-on:click="showCommentsInCard = false">Hide the card history
+          <md-button v-if="showCurrentCardHistory" v-on:click="showCurrentCardHistory = false">Hide the card history
           </md-button>
-          <md-button v-if="!showCommentsInCard" v-on:click="showCommentsInCard = true">
+          <md-button v-if="!showCurrentCardHistory" v-on:click="showCurrentCardHistory = true">
             Show the card history
           </md-button>
           <div style="min-width: 100%">
@@ -114,7 +114,17 @@
               <br>
             </md-content>
           </div>
+          <div  v-if="showCurrentCardHistory" style="min-width: 100%">
+            <md-content class="md-scrollbar" style="max-height: 200px; min-width: 100%">
+              <div v-for="(historyEntry) in activeCardHistory.activity_history" v-bind:key="historyEntry.date"
+                   style="width: 100%; background-color: lightgray; padding: 10px; margin-bottom: 10px">
 
+                <div>{{formatDate(historyEntry.date)}}: {{ historyEntry.description }}</div>
+              </div>
+
+              <br>
+            </md-content>
+          </div>
           <md-dialog-actions>
             <md-button class="md-raised" :md-ripple="false"
                        style="width: 100px; font-size: 14px; background-color: #0079BF; color: white;"
@@ -365,7 +375,7 @@
                                @click="clearColorsActive(); palletColorShow = false; showDialogEditCard = true; currentCardId = card.id; currentCard = card;
                         terms = [formatDate(card.term)];
                         cardTermCompletion=card.term_completion; currentListID=list.id; newEditCardTitle = card.title; newEditCardDescription = card.description;
-                        loadCommentsForCurrentCard()">
+                        loadCommentsForCurrentCard(); getHistoryForCurrentCard()">
                             <md-card md-with-hover style="margin: 5px; border-radius: 5px;">
                               <md-ripple>
                                 <div style="justify-content: left;display: flex; flex-wrap: wrap;">
@@ -464,10 +474,11 @@ export default {
         {'active': false, 'color': '000000'},
       ],
       colorCardArray: [],
-      showCommentsInCard: false,
+      showCurrentCardHistory: false,
       newCommentContent: "",
       newListTitle: "",
-      activeCardComments: []
+      activeCardComments: [],
+      activeCardHistory: {}
     }
   },
   created: async function () {
@@ -589,6 +600,7 @@ export default {
 
       console.log("lists" + this.lists)
       console.log("board_properties " + this.newBackground64)
+
     },
     getUserBoards: async function () {
       var headers = new Headers();
@@ -612,6 +624,16 @@ export default {
 
       console.log(this.activeCardComments)
     },
+    getHistoryForCurrentCard: async function () {
+      this.activeCardHistory = [];
+      var headers = new Headers();
+      headers.append("Authorization", 'Bearer ' + this.$store.state.token);
+      let response = await fetch(this.$API + "/get_card_activity_history?card_id=" + this.currentCard.id, {headers: headers})
+      let data = await response.json()
+      this.activeCardHistory = data;
+      console.log(this.activeCardHistory)
+
+    },
     addList(newListName) {
       const headers = new Headers();
       headers.append("Authorization", 'Bearer ' + this.$store.state.token);
@@ -619,6 +641,7 @@ export default {
       var formdata = new FormData();
       formdata.append("board_id", this.board.id);
       formdata.append("new_list_title", newListName);
+      formdata.append("username", this.$store.state.user.username);
       var requestOptions = {
         method: 'POST',
         body: formdata,
@@ -1020,6 +1043,7 @@ export default {
           .then(result => {
             console.log(result)
             this.showMoveList = false;
+            this.getHistoryForCurrentCard();
             this.loadContent();
           })
           .catch(error => console.log('error', error));
@@ -1090,6 +1114,7 @@ export default {
           .then(response => response.text())
           .then(result => {
             console.log(result)
+            this.getHistoryForCurrentCard();
             this.loadContent();
           })
           .catch(error => console.log('error', error));
